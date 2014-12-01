@@ -257,12 +257,7 @@ class Site_Locations {
       return;
     }
 
-    wp_redirect( add_query_arg( array(
-      'ip' => IP::get_visitor_ip( 'ip' ),
-      'proxy_score' => IP::get_visitor_ip( 'proxy_score' ),
-      'tracking_info' => Cookies::get_tracking_cookie(),
-      ), GEOIPSL_PLUGIN_URL . 'redirect.php' )
-    );
+    wp_redirect( GEOIPSL_PLUGIN_URL . 'redirect.php' );
     exit;
   }
 

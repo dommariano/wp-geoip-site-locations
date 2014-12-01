@@ -4,9 +4,9 @@ require_once( '../../../wp-blog-header.php' );
 
 global $wpdb;
 
-$ip 						= geoipsl_array_value( $_GET, 'ip', '' );
-$proxy_score 		= (int) geoipsl_array_value( $_GET, 'proxy_score', 0 );
-$tracking_info 	= geoipsl_array_value( $_GET, 'tracking_info', '' );
+$ip 						= GeoIPSL\IP::get_visitor_ip( 'ip' );
+$proxy_score 		= (int) GeoIPSL\IP::get_visitor_ip( 'proxy_score' );
+$tracking_info 	= GeoIPSL\Cookies::get_tracking_cookie();
 
 $ip = GeoIPSL\IP::is_reserved_ipv4( $ip  ) ? GEOIPSL_RESERVED_IP : $ip;
 $ip = '' == $ip || filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) ? $ip : GEOIPSL_INVALID_IP;
