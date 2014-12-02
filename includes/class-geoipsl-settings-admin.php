@@ -178,6 +178,22 @@ class Settings_Admin implements Settings_Admin_Interface {
     $this->admin_settings->set( 'geoip_test_status', $option_value );
   }
 
+  public function get_redirect_after_load_status() {
+    return (string) $this->admin_settings->get( 'redirect_after_load_status' );
+  }
+
+  public function set_redirect_after_load_status( $option_value ) {
+    if ( ! is_string( $option_value ) ) {
+      throw new \InvalidArgumentException( 'set_redirect_after_load_status expects $option_value to be of type string, ' . gettype( $option_value ) . ' given.' );
+    }
+
+    if ( ! in_array( $option_value, array( GEOIPSL_OFF_STATUS, GEOIPSL_ON_STATUS ) ) ) {
+      throw new \InvalidArgumentException( 'set_redirect_after_load_status expects $option_value to be either be, "' . GEOIPSL_OFF_STATUS . '" or "' . GEOIPSL_ON_STATUS . '"' . $option_value . ' given.' );
+    }
+
+    $this->admin_settings->set( 'redirect_after_load_status', $option_value );
+  }
+
   public function get_geoip_test_database_or_service() {
     return (int) $this->admin_settings->get( 'geoip_test_database_or_service' );
   }

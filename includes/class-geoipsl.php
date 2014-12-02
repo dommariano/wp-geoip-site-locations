@@ -38,9 +38,9 @@ class Site_Locations {
     // Every NONEMPTY setting that exists about this plugin.
     add_option( geoipsl_prefix_string( 'settings' ), array() );
 
-    add_action( 'template_redirect',                                array( __CLASS__, 'redirect_to_geoip_subsite'          ) );
-    add_action( 'wp_ajax_mobile_redirect_to_geoip_subsite',         array( __CLASS__, 'mobile_redirect_to_geoip_subsite'   ) );
-    add_action( 'wp_ajax_nopriv_mobile_redirect_to_geoip_subsite',  array( __CLASS__, 'mobile_redirect_to_geoip_subsite'   ) );
+    add_action( 'template_redirect',                              array( __CLASS__, 'redirect_to_geoip_subsite'        ) );
+    add_action( 'wp_ajax_ajax_redirect_to_geoip_subsite',         array( __CLASS__, 'ajax_redirect_to_geoip_subsite'   ) );
+    add_action( 'wp_ajax_nopriv_ajax_redirect_to_geoip_subsite',  array( __CLASS__, 'ajax_redirect_to_geoip_subsite'   ) );
 
     ob_start(); // To allow for redirection.
   }
@@ -142,7 +142,11 @@ class Site_Locations {
       if ( $mobile_detect->isMobile() ) {
         add_action( 'wp_enqueue_scripts', array( __CLASS__ , 'load_mobile_app' ), 1 );
       } else {
-        self::redirect_to_geoip_desktop_subsite();
+        if ( GEOIPSL_ON_STATUS == $geoipsl_settings->get( 'redirect_after_load_status' ) ) {
+          add_action( 'wp_enqueue_scripts', array( __CLASS__ , 'load_maxmind_js_app' ), 1 );
+        } else {
+          self::redirect_to_geoip_desktop_subsite();
+        }
       }
     } else {
       Cookies::set_location_cookie( get_current_blog_id(), 30, time() );
@@ -152,6 +156,23 @@ class Site_Locations {
   }
 
   public static function load_desktop_app( array $blog_ids ) {
+  }
+
+  public static function load_maxmind_js_app() {
+    global $geoipsl_settings;
+
+    wp_register_script( 'geoipslmaxmindjsapi', '//js.maxmind.com/js/apis/geoip2/v2.1/geoip2.js', NULL, NULL );
+    wp_register_script( 'geoipslmaxmindapp', trailingslashit( plugin_dir_url( __FILE__ ) ) . 'js/geoipslmaxmindapp.js', array( 'jquery' ), NULL );
+    wp_localize_script( 'geoipslmaxmindapp', 'geoipslapp', array(
+      'ajaxurl' => admin_url( 'admin-ajax.php' ),
+      'triggerElement' => $geoipsl_settings->get( 'lightbox_trigger_element' ),
+    ) );
+
+    if ( ! wp_script_is('jquery', 'enqueued') ) {
+      wp_enqueue_script( 'jquery');
+    }
+    wp_enqueue_script( 'geoipslmaxmindjsapi');
+    wp_enqueue_script( 'geoipslmaxmindapp');
   }
 
   /**
@@ -198,7 +219,7 @@ class Site_Locations {
     * @param none
     * @return void
     */
-  public static function redirect_to_geoip_mobile_subsite() {
+  public static function ajax_redirect_to_geoip_subsite() {
     global $geoipsl_settings;
 
     if ( ! isset( $_POST[ 'lat_from' ] ) ) {
@@ -211,14 +232,22 @@ class Site_Locations {
 
     $lat_from  = floatval( $_POST[ 'lat_from' ] );
     $lang_from = floatval( $_POST[ 'lang_from' ] );
+    $coords    = array();
+    $blog_ids  = array( 0 => 1 );
 
     if ( $geoipsl_settings->get( 'geoip_test_on' ) ) {
       if ( '' !== $geoipsl_settings->get( 'test_mobile_coords_from' ) ) {
         $coords = explode( ',', str_replace( ' ', '', $geoipsl_settings->get( 'test_mobile_coords_from' ) ) );
       }
+    } else {
+      $coords[0] = $lat_from;
+      $coords[1] = $lang_from;
     }
 
-    $blog_ids  = self::get_closest_site( (int) $coords[0], (int) $coords[1], 1000 * floatval( $geoipsl_settings->get( 'distance_limit' ) ) );
+    if ( 2 == count( $coords ) ) {
+      $blog_ids  = Distance::get_closest_site( floatval( $coords[0] ), floatval( $coords[1] ), 1000 * floatval( $geoipsl_settings->get( 'distance_limit' ) ) );
+    }
+
     $blog_urls = array();
 
     foreach ( $blog_ids as $key => $blog_id ) {

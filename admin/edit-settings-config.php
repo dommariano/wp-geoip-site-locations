@@ -12,6 +12,19 @@
         <td>
           <fieldset>
             <legend class="screen-reader-text"><span><?php _e( 'Redirect settings', 'geoipsl' ); ?></span></legend>
+
+            <!-- <label for="redirect_status">
+              <input name="redirect_status" type="checkbox" id="redirect_status" value=<?php printf( '"%s"', GEOIPSL_ON_STATUS ); ?> <?php echo checked( $geoipsl_admin_settings->get( 'redirect_status' ), GEOIPSL_ON_STATUS ); ?>>
+              <?php _e( 'Redirect users to apppropriate subsite when they visit site home page.', 'geoipsl' ); ?>
+            </label>
+            <br> -->
+
+            <label for="redirect_after_load_status">
+              <input name="redirect_after_load_status" type="checkbox" id="redirect_after_load_status" value=<?php printf( '"%s"', GEOIPSL_ON_STATUS ); ?> <?php echo checked( $geoipsl_admin_settings->get( 'redirect_after_load_status' ), GEOIPSL_ON_STATUS ); ?>>
+              <?php _e( 'Load the site first and then redirect immedietly as soon as it can.', 'geoipsl' ); ?>
+            </label>
+            <br>
+
             <label for="persistent_redirect_status">
               <input name="persistent_redirect_status" type="checkbox" id="persistent_redirect_status" value=<?php printf( '"%s"', GEOIPSL_ON_STATUS ); ?> <?php echo checked( $geoipsl_admin_settings->get( 'persistent_redirect_status' ), GEOIPSL_ON_STATUS ); ?> >
               <?php _e( 'Allow persistent redirect for repeat visitors', 'geoipsl' ); ?>

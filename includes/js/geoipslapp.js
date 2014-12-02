@@ -28,7 +28,7 @@ jQuery( document ).ready( function() {
 				url: geoipslapp.ajaxurl,
 	      type: 'POST',
 	      data: {
-	      	action: 'mobile_redirect_to_geoip_subsite',
+	      	action: 'ajax_redirect_to_geoip_subsite',
 	      	lat_from: position.coords.latitude,
 	      	lang_from: position.coords.longitude
 	      },

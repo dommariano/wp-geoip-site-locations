@@ -361,6 +361,10 @@ if ( $do_action ) {
       $geoipsl_admin_settings->set_query_proxies_status( (string) $option_value );
       $remove_args[] = 'query_proxies_status';
 
+      $option_value = geoipsl_request_value( 'redirect_after_load_status', GEOIPSL_OFF_STATUS );
+      $geoipsl_admin_settings->set_redirect_after_load_status( (string) $option_value );
+      $remove_args[] = 'redirect_after_load_status';
+
       $send_back = remove_query_arg( $remove_args, $send_back );
       break;
   }

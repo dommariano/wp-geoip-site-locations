@@ -62,19 +62,19 @@ class Distance {
   public static function geodesic( $latitude1, $longitude1, $latitude2, $longitude2 ) {
 
     if ( ! is_float( $latitude1 ) ) {
-      throw new InvalidArgumentException( 'geodesic expects $latitude1 to be float, ' . gettype( $latitude1 ) . ' given.' );
+      throw new \InvalidArgumentException( 'geodesic expects $latitude1 to be float, ' . gettype( $latitude1 ) . ' given.' );
     }
 
     if ( ! is_float( $longitude1 ) ) {
-      throw new InvalidArgumentException( 'geodesic expects $longitude1 to be float, ' . gettype( $longitude1 ) . ' given.' );
+      throw new \InvalidArgumentException( 'geodesic expects $longitude1 to be float, ' . gettype( $longitude1 ) . ' given.' );
     }
 
     if ( ! is_float( $latitude2 ) ) {
-      throw new InvalidArgumentException( 'geodesic expects $latitude2 to be float, ' . gettype( $latitude2 ) . ' given.' );
+      throw new \InvalidArgumentException( 'geodesic expects $latitude2 to be float, ' . gettype( $latitude2 ) . ' given.' );
     }
 
     if ( ! is_float( $longitude2 ) ) {
-      throw new InvalidArgumentException( 'geodesic expects $longitude2 to be float, ' . gettype( $longitude2 ) . ' given.' );
+      throw new \InvalidArgumentException( 'geodesic expects $longitude2 to be float, ' . gettype( $longitude2 ) . ' given.' );
     }
 
     // Convert all inputs to radians.
