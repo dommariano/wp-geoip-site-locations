@@ -7,14 +7,14 @@ if ( ! function_exists( 'add_action' ) && ! function_exists( 'add_filter' ) ) {
 
 /**
  *  GeoIP Sites List Table class.
- * @since 1.0.0
+ * @since 0.1.0
  */
 class Sites_List_Table extends \WP_List_Table {
 
 	/**
 	 * Constructor.
 	 *
-	 * @since 1.0.0
+	 * @since 0.1.0
 	 *
 	 * @see WP_List_Table::__construct() for more information on default arguments.
 	 *

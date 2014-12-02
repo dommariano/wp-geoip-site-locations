@@ -12,7 +12,7 @@ class Distance {
     *
     * This works for small distances. At long lines however, it is better to use Vicenty's formula.
     *
-    * @since 1.0.0
+    * @since 0.1.0
     * @see http://en.wikipedia.org/wiki/Haversine_formula
     * @see http://www.movable-type.co.uk/scripts/latlong.html
     *
@@ -49,7 +49,7 @@ class Distance {
     * At nearly antipodal points, this algorithm will iterate more than 1000 times to converge. At actual antipodal points, however,
     * we fail to converge at all.
     *
-    * @since 1.0.0
+    * @since 0.1.0
     * @see http://geographiclib.sourceforge.net/geod-addenda.html
     * @todo Implement faster Newtons Method as described by Karney here
     *       http://download.springer.com/static/pdf/937/art%253A10.1007%252Fs00190-012-0578-z.pdf?auth66=1410111460_5ebd7e238dacab05e2b8d4a74abe3ac6&ext=.pdf
@@ -142,7 +142,7 @@ class Distance {
     *
     * Calculate travel ( walking, driving, bicycling ) distance and time between the two coordinates given according to Google.
     *
-    * @since 1.0.0
+    * @since 0.1.0
     *
     * @param float $latitude1 The latitude of the first coordinate
     * @param float $longitude1 The longitude of the first coordinate
@@ -160,7 +160,7 @@ class Distance {
     * Determine the site closest to the retrieved IP,
     * given the coordinate supplied for the subsite.
     *
-    * @since 1.0.0
+    * @since 0.1.0
     *
     * @param float $lat_from Latitude.
     * @param float $long_from Longitude.

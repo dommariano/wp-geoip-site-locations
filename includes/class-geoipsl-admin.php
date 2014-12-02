@@ -7,7 +7,7 @@ if ( ! function_exists( 'add_action' ) && ! function_exists( 'add_filter' ) ) {
 
 /**
   * Plugin class for managing the user interface.
-  * @since 1.0.0
+  * @since 0.1.0
   */
 
 class Admin extends Settings implements Admin_Settings_Interface {

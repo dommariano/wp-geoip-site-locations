@@ -13,7 +13,7 @@ class IP {
     * differentiate between a high anonymous proxy and user no proxy at all. Thus, this function can only
     * determine distorting or transparent open proxies. Anonymous proxy IP and true user IP is treated the same.
     *
-    * @since 1.0.0
+    * @since 0.1.0
     *
     * @param string $ip A valid non-reserved IPv4 IP
     * @return bool|int Boolean false if IP is invalid, or is not IPv4, or if a socket connection cannot be established
@@ -69,7 +69,7 @@ class IP {
     *
     * Checks if IPv4 IP is in a given range specified in CIDR format.
     *
-    * @since 1.0.0
+    * @since 0.1.0
     *
     * @param string $ip A valid non-reserved IPv4 IP
     * @param string $range A valid non-reserved IPv4 CIDR
@@ -98,7 +98,7 @@ class IP {
     *
     * Checks if given IP is a reserved IPv4 IP.
     *
-    * @since 1.0.0
+    * @since 0.1.0
     *
     * @param string $ip A valid non-reserved IPv4 IP
     * @return bool|int Boolean true if IP is reserved, false if not reserved, 0 if invalid IP is given.

@@ -10,7 +10,7 @@ if ( ! function_exists( 'add_action' ) && ! function_exists( 'add_filter' ) ) {
   * If the GEOIPSL_PREFIX constant is removed, the fuction
   * will default to 'geoipsl_' as fallback prefix string.
   *
-  * @since 1.0.0
+  * @since 0.1.0
   *
   * @param none
   * @return string
@@ -25,7 +25,7 @@ function geoipsl_get_prefix() {
 /**
   * Prefix a given string with the defined plugin prefix.
   *
-  * @since 1.0.0
+  * @since 0.1.0
   *
   * @uses GeoIP_Site_Locations_Util::geoipsl_get_prefix()
   * @param string $string The string to be prefixed.
@@ -52,7 +52,7 @@ function geoipsl_prefix_string( $string ) {
   *
   * Taken from the get_list_table() function geoipsl_of WordPress.
   *
-  * @since 1.0.0
+  * @since 0.1.0
   *sa
   * @param string $class The type of the list table, which is the class name.
   * @param array $args Optional. Arguments to pass to the class. Accepts 'screen'.
@@ -84,7 +84,7 @@ function geoipsl_get_list_table( $class, $args = array() ) {
 /**
   * Activate a given GeoIP location.
   *
-  * @since 1.0.0
+  * @since 0.1.0
   *
   * @param string $geolocation_id The string to be prefixed.
   * @return array $activated_locations Array of activated locations.
@@ -121,7 +121,7 @@ function geoipsl_activate_location( $blog_id, $location ) {
 /**
   * Deactivate a given GeoIP location.
   *
-  * @since 1.0.0
+  * @since 0.1.0
   *
   * @param string $geolocation_id The string to be prefixed.
   * @return bool|int Boolean FALSE if current user is not allowed to do this or interger number of active locations on success.
@@ -150,7 +150,7 @@ function geoipsl_deactivate_location( $blog_id ) {
 /**
   * Echoes the return value of wpautop
   *
-  * @since 1.0.0
+  * @since 0.1.0
   * @todo Remove this. Use sprintf() instead with <p> as parameter.
   *
   * @param string $string  The text to be formatted.
@@ -167,7 +167,7 @@ function geoipsl_wpautop_e( $string, $br = true ) {
 /**
   * Prefix a file name with the full path to our plugins data/ folder.
   *
-  * @since 1.0.0
+  * @since 0.1.0
   *
   * @param string $geolocation_id The string to be prefixed.
   * @throws InvalidArgumentException
@@ -196,7 +196,7 @@ function geoipsl_get_file_path( $destination_file_name, $dir = 'data' ) {
 /**
   * Download a dependency and put it in our plugin's data/ directory.
   *
-  * @since 1.0.0
+  * @since 0.1.0
   *
   * @uses geoipsl_get_file_path()
   * @param string $geolocation_id The string to be prefixed.
@@ -282,7 +282,7 @@ function geoipsl_download_file( $destination_file_name, $source_file_url ) {
   * For example, if today is Thursday, 11 September 2014, what would be date
   * corrensponding to Monday of today's curent week?
   *
-  * @since 1.0.0
+  * @since 0.1.0
   *
   * @param string $day Day of the week, or numeric equivalent where 1 is for Sunday to 7 for Saturday
   * @param int $relative_to_date Date in Unix timestamp format for which to base our calculation
@@ -341,7 +341,7 @@ function geoipsl_get_date_of_day_on_week( $day = "Monday", $relative_to_date = '
   * 13 September 2014, then Friday this week has already passed so we return the "next" Friday which is
   * 19 September 2014.
   *
-  * @since 1.0.0
+  * @since 0.1.0
   *
   * @uses geoipsl_get_date_of_day_on_week()
   * @param string $day Day of the week, or numeric equivalent where 1 is for Sunday to 7 for Saturday
@@ -372,7 +372,7 @@ function geoipsl_get_next_day_of_week( $day = "Monday", $relative_to_date = '' )
   * 21  22  23  24  25  26  27
   * 28  29  30  1   2   3   4
   *
-  * @since 1.0.0
+  * @since 0.1.0
   *
   * @uses geoipsl_get_date_of_day_on_week()
   * @param string $month Full or short month name, or numeric equivalent from 1 to 12
@@ -510,7 +510,7 @@ function geoipsl_get_all_days( $month = "January", $year = 2014, $return_format 
   * 21  22  23  [ 24 ]  25  26  27
   * 28  29  30  [ 1  ]  2   3   4
   *
-  * @since 1.0.0
+  * @since 0.1.0
   *
   * @uses geoipsl_get_date_of_day_on_week()
   * @param string $day Full or short day name, or numeric equivalent from 1 to 7
@@ -580,7 +580,7 @@ function geoipsl_get_these_days( $day = "Monday", $month = "January", $year = 20
   *   21    22    23  [ 24 ]   25     26     27
   *   28    29    30  [ 1  ]   2      3      4
   *
-  * @since 1.0.0
+  * @since 0.1.0
   *
   * @uses geoipsl_get_date_of_day_on_week()
   * @param string $day Full or short day name, or numeric equivalent from 1 to 7

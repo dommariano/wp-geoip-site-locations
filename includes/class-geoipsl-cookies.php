@@ -14,7 +14,7 @@ class Cookies {
   /**
     * Create wp_geoipsl visitor location tracking cookie.
     *
-    * @since 1.0.0
+    * @since 0.1.0
     *
     * @param int $blog_id The current blog id.
     * @return void
@@ -51,7 +51,7 @@ class Cookies {
   /**
     * Get tracking info time code.
     *
-    * @since 1.0.0
+    * @since 0.1.0
     *
     * @param string $wp_geoipsl_cookie_string the current cookie value.
     * @return string
@@ -67,7 +67,7 @@ class Cookies {
   /**
     * Get tracking info limit.
     *
-    * @since 1.0.0
+    * @since 0.1.0
     *
     * @param string $wp_geoipsl_cookie_string the current cookie value.
     * @return string
@@ -83,7 +83,7 @@ class Cookies {
   /**
     * Get tracking info counter.
     *
-    * @since 1.0.0
+    * @since 0.1.0
     *
     * @param string $wp_geoipsl_cookie_string the current cookie value.
     * @return string
@@ -99,7 +99,7 @@ class Cookies {
   /**
     * Set tracking info counter.
     *
-    * @since 1.0.0
+    * @since 0.1.0
     *
     * @param string $wp_geoipsl_cookie_string the current cookie value.
     * @return string
@@ -118,7 +118,7 @@ class Cookies {
     * Determine which site to serve for repeat visitors based on
     * cookie information.
     *
-    * @since 1.0.0
+    * @since 0.1.0
     *
     * @param none
     * @return void
@@ -178,7 +178,7 @@ class Cookies {
     * The recorded site visits for a particular blog may or may not be contiguous ---
     * that is different subsites may be visited in no particular order.
     *
-    * @since 1.0.0
+    * @since 0.1.0
     *
     * @param int $interval_limit Maximum number of seconds allowed difference between two recorded time stamps.
     *            This limit is needed as a corrective method for the ranking algorithm used to infer site preference.
@@ -215,7 +215,7 @@ class Cookies {
   /**
     * Get time info from tracking data, given blog id.
     *
-    * @since 1.0.0
+    * @since 0.1.0
     *
     * @param array $wp_geoipsl Associative array of values in a predefined format.
     * @param int $blog_id Blog ID.
@@ -267,7 +267,7 @@ class Cookies {
   /**
     * Get page info from tracking data, given blog id.
     *
-    * @since 1.0.0
+    * @since 0.1.0
     *
     * @param array $wp_geoipsl Associative array of values in a predefined format.
     * @param int $blog_id Blog ID.
@@ -326,7 +326,7 @@ class Cookies {
   /**
     * Get tracking data from site cookie.
     *
-    * @since 1.0.0
+    * @since 0.1.0
     *
     * @param string $wp_geoipsl_cookie_string the current cookie value.
     * @return obj $info

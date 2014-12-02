@@ -15,14 +15,14 @@ if ( ! function_exists( 'add_action' ) && ! function_exists( 'add_filter' ) ) {
   * will not be redirected, but instead will be given the option to select the site location
   * they wish to be redirected to ( requires theme integration ).
   *
-  * @since 1.0.0
+  * @since 0.1.0
   */
 class Site_Locations {
 
   /**
     * Initialise the program after everything is ready.
     *
-    * @since 1.0.0
+    * @since 0.1.0
     *
     * @param none
     * @return void
@@ -49,7 +49,7 @@ class Site_Locations {
     * Checks program environment to see if all dependencies are available. If at least one
     * dependency is absent, deactivate the plugin.
     *
-    * @since 1.0.0
+    * @since 0.1.0
     *
     * @param none
     * @return void
@@ -87,7 +87,7 @@ class Site_Locations {
     * When plugin is deleted from admin, ask the user if
     * they want to delete the database tables and other data as well.
     *
-    * @since 1.0.0
+    * @since 0.1.0
     *
     * @param none
     * @return void
@@ -99,7 +99,7 @@ class Site_Locations {
     * Install fresh database tables on first install or update the database if this is a
     * update for the plugin.
     *
-    * @since 1.0.0
+    * @since 0.1.0
     *
     * @param none
     * @return void
@@ -122,7 +122,7 @@ class Site_Locations {
   /**
     * Redirect to appropriate GeoIP subsite.
     *
-    * @since 1.0.0
+    * @since 0.1.0
     *
     * @param none
     * @return void
@@ -178,7 +178,7 @@ class Site_Locations {
   /**
     * Load our front-end assets for Geolocation on mobile and tablet devices.
     *
-    * @since 1.0.0
+    * @since 0.1.0
     *
     * @param none
     * @return void
@@ -214,7 +214,7 @@ class Site_Locations {
   /**
     * HTML5 Geolocation API will be used here. Thus, JavaScript.
     *
-    * @since 1.0.0
+    * @since 0.1.0
     *
     * @param none
     * @return void
@@ -264,7 +264,7 @@ class Site_Locations {
   /**
     * Redirect users who are using desktop devices.
     *
-    * @since 1.0.0
+    * @since 0.1.0
     *
     * @param none
     * @return void
@@ -297,7 +297,7 @@ class Site_Locations {
     * The entry point will typically be the homr or front page of the
     * root site.
     *
-    * @since 1.0.0
+    * @since 0.1.0
     * @todo REMOVE this and use site_entry_point feature instead.
     */
   public static function is_on_site_entry_point( $blog_id ) {
@@ -323,7 +323,7 @@ class Site_Locations {
   /**
     * Prefix the retrieved request URI with the appropriate domain/subsite link.
     *
-    * @since 1.0.0
+    * @since 0.1.0
     *
     * @param int $blog_id The blog id of the site to redirect to.
     * @return void

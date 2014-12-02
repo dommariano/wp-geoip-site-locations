@@ -5,7 +5,7 @@ error_reporting( E_ALL );
 /*
 Plugin Name: GeoIP Site Locations
 Description: Detect user location based on IP or cookie information and redirect to the appropriate geo-targetted version of your site.
-Version: 1.0.0
+Version: 0.1.0
 Author: Dominique Mariano
 Author URI: http://www.twitter.com/miniQueue
 License: GPLv2 or later
@@ -39,7 +39,7 @@ if ( ! function_exists( 'add_action' ) && ! function_exists( 'add_filter' ) ) {
 
 define( 'GEOIPSL_PLUGIN_NAME'         							,   plugin_basename( __FILE__ )   );
 define( 'GEOIPSL_PREFIX'              							,   'geoipsl_'                    );
-define( 'GEOIPSL_PLUGIN_VERSION'      							,   '1.0.0'                     );
+define( 'GEOIPSL_PLUGIN_VERSION'      							,   '0.1.0'                     );
 define( 'GEOIPSL_DATABASE_VERSION'    							,   1                             );
 define( 'GEOIPSL_MINIMUM_WP_VERSION'  							,   '3.9.2'                       );
 define( 'GEOIPSL_PLUGIN_URL'          							,   plugin_dir_url( __FILE__ )    );
