@@ -1,0 +1,24 @@
+<phpunit
+	bootstrap="tests/bootstrap.php"
+	backupGlobals="false"
+	colors="true"
+	convertErrorsToExceptions="true"
+	convertNoticesToExceptions="true"
+	convertWarningsToExceptions="true"
+	stderr="true"
+	>
+	<testsuites>
+		<testsuite name="utilities">
+			<file>./tests/test-geoip-site-locations-util.php</file>
+		</testsuite>
+
+		<testsuite name="admin">
+			<file>./tests/test-geoip-sites-list-table.php</file>
+			<file>./tests/test-geoip-site-locations-admin.php</file>
+		</testsuite>
+
+		<testsuite name="main">
+			<file>./tests/test-geoip-site-locations.php</file>
+		</testsuite>
+	</testsuites>
+</phpunit>
