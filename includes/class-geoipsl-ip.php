@@ -1,22 +1,30 @@
 <?php namespace GeoIPSL;
 
 if ( ! function_exists( 'add_action' ) && ! function_exists( 'add_filter' ) ) {
-    echo "Hi there!  I'm just a plugin, not much I can do when called directly.";
-    exit;
+  echo "Hi there!  I'm just a plugin, not much I can do when called directly.";
+  exit;
 }
 
+/**
+  * GeoIPSL\IP contains all utility functions for dealing with IPs.
+  *
+  * @package GeoIPSL
+  * @author Dominique Mariano <dominique.acpal.mariano@gmail.com>
+  */
 class IP {
+
   /**
     * Attempt to get the visitor WAN/LAN IP using $_SERVER variables AND detect if user is using a proxy.
     *
     * This function cannot differentiate between a distorting proxy and a transparent proxy. This also cannot
     * differentiate between a high anonymous proxy and user no proxy at all. Thus, this function can only
-    * determine distorting or transparent open proxies. Anonymous proxy IP and true user IP is treated the same.
+    * determine some distorting or transparent open proxies. Anonymous proxy IP and true user IP is treated the same.
     *
     * @since 0.1.0
     *
-    * @param string $ip A valid non-reserved IPv4 IP
-    * @return bool|int Boolean false if IP is invalid, or is not IPv4, or if a socket connection cannot be established
+    * @param string $only Filter to isolate results. 'ip' will return only the IP address, 'proxy_score' will
+    *        return only the proxy score. Anything else will return an array containing both.
+    * @return string | array IP address or proxy score or an array containing both.
     */
   public static function get_visitor_ip( $only = '' ) {
 
@@ -52,6 +60,8 @@ class IP {
       $ip_info['proxy_score'] = $proxy_score;
     }
 
+    unset( $proxy_score );
+
     switch ( $only ) {
       case 'ip':
         return $ip_info['ip'];
@@ -66,7 +76,6 @@ class IP {
   }
 
   /**
-    *
     * Checks if IPv4 IP is in a given range specified in CIDR format.
     *
     * @since 0.1.0
@@ -95,7 +104,6 @@ class IP {
   }
 
   /**
-    *
     * Checks if given IP is a reserved IPv4 IP.
     *
     * @since 0.1.0
@@ -137,6 +145,8 @@ class IP {
 
       $match_found = self::cidr_match_ipv4( $ip, $range );
     }
+
+    unset( $reserved_ip, $range );
 
     return $match_found;
   }
