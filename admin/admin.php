@@ -13,7 +13,7 @@ if ( is_admin() ) {
   /**
     * Message to display after FRESH install of this plugin.
     *
-    * @since 1.0.0
+    * @since 0.1.0
     *
     * @return void
     */
