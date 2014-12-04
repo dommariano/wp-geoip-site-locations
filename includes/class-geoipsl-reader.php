@@ -12,37 +12,30 @@ class Reader implements Reader_Interface {
 	private $_is_using_local;
 
 	public function __construct() {
-
 		$this->set_to_use_geoip_db();
 	}
 
 	public function set_geoip_db_reader( \GeoIp2\Database\Reader $local_reader ) {
-
 		$this->_local_reader = $local_reader;
 	}
 
 	public function set_remote_db_reader( \GeoIp2\WebService\Client $remote_reader ) {
-
 		$this->_remote_reader = $remote_reader;
 	}
 
 	public function set_to_use_geoip_db() {
-
 		$this->_is_using_local = TRUE;
 	}
 
 	public function set_to_use_remote_db() {
-
 		$this->_is_using_local = FALSE;
 	}
 
 	public function is_using_geoip_db() {
-
 		return $this->_is_using_local;
 	}
 
 	public function is_using_remote_db() {
-
 		return ! $this->_is_using_local;
 	}
 

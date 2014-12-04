@@ -1,13 +1,17 @@
 <?php namespace GeoIPSL;
 
 if ( ! function_exists( 'add_action' ) && ! function_exists( 'add_filter' ) ) {
-    echo "Hi there!  I'm just a plugin, not much I can do when called directly.";
-    exit;
+  echo "Hi there!  I'm just a plugin, not much I can do when called directly.";
+  exit;
 }
 
 /**
- *  GeoIP Sites List Table class.
+ * GeoIP Sites List Table class.
+ *
+ * Patterned from WP_MS_Sites_List_Table class.
+ *
  * @since 0.1.0
+ * @todo Add search functionality for easy navigation.
  */
 class Sites_List_Table extends \WP_List_Table {
 
@@ -296,21 +300,6 @@ class Sites_List_Table extends \WP_List_Table {
 							$actions['backend']	= "<span class='backend'><a href='" . esc_url( get_admin_url( $blog['blog_id'] ) ) . "' class='edit'>" . __( 'Dashboard' ) . '</a></span>';
 							$actions['visit']	= "<span class='view'><a href='" . esc_url( get_home_url( $blog['blog_id'], '/' ) ) . "' rel='permalink'>" . __( 'Visit' ) . '</a></span>';
 
-							/**
-							 * Filter the action links displayed for each site in the Sites list table.
-							 *
-							 * The 'Edit', 'Dashboard', 'Delete', and 'Visit' links are displayed by
-							 * default for each site. The site's status determines whether to show the
-							 * 'Activate' or 'Deactivate' link, 'Unarchive' or 'Archive' links, and
-							 * 'Not Spam' or 'Spam' link for each site.
-							 *
-							 * @since 3.1.0
-							 *
-							 * @param array  $actions  An array of action links to be displayed.
-							 * @param int    $blog_id  The site ID.
-							 * @param string $blogname Site path, formatted depending on whether it is a sub-domain
-							 *                         or subdirectory multisite install.
-							 */
 							$actions = apply_filters( 'manage_sites_action_links', array_filter( $actions ), $blog['blog_id'], $blogname );
 							echo $this->row_actions( $actions );
 					?>
@@ -380,14 +369,7 @@ class Sites_List_Table extends \WP_List_Table {
 
 				default:
 					echo "<td class='$column_name column-$column_name'$style>";
-					/**
-					 * Fires for each registered custom column in the Sites list table.
-					 *
-					 * @since 3.1.0
-					 *
-					 * @param string $column_name The name of the column to display.
-					 * @param int    $blog_id     The site ID.
-					 */
+
 					do_action( 'manage_sites_custom_column', $column_name, $blog['blog_id'] );
 					echo "</td>";
 					break;

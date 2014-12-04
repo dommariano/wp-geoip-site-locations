@@ -23,6 +23,13 @@ if ( ! function_exists( 'add_action' ) && ! function_exists( 'add_filter' ) ) {
   * site_group_head_settings will be read. But instead of having
   * rather huge object with default values, the array will only
   * fields with actual values.
+  *
+  * @todo Simplify setter functions. Functions that save the same kind of data
+  *       to the options table have to be consolidated into one to reduce
+  *       our code mass.
+  * @todo Simplify argument checking. Currently PHP does not support
+  *       type hinting for primitives. Figure out a work around to reduce our
+  *       code mass.
   */
 
 class Settings_Admin implements Settings_Admin_Interface {
@@ -43,7 +50,7 @@ class Settings_Admin implements Settings_Admin_Interface {
 
   public function set_geoip_db( $option_value ) {
     if ( ! in_array( $option_value, range( 1, 3 ) ) ) {
-      throw new \InvalidArgumentException( 'get_geoip_db expects $option_value to be in the range, 1 to 3, ' . $option_value . ' given.' );
+      throw new \InvalidArgumentException( 'set_geoip_db expects $option_value to be in the range, 1 to 3, ' . $option_value . ' given.' );
     }
 
     $this->admin_settings->set( 'geoip_db', $option_value );
@@ -56,7 +63,7 @@ class Settings_Admin implements Settings_Admin_Interface {
   public function set_geoip_web_service( $option_value ) {
 
     if ( ! ( in_array( $option_value, range( 1, 3 ) ) || '' == $option_value ) ) {
-      throw new \InvalidArgumentException( 'set_geoip_database expects $option_value to be in the range, 1 to 3, ' . $option_value . ' given.' );
+      throw new \InvalidArgumentException( 'set_geoip_web_service expects $option_value to be in the range, 1 to 3, ' . $option_value . ' given.' );
     }
 
     $this->admin_settings->set( 'geoip_web_service', $option_value );
@@ -272,7 +279,7 @@ class Settings_Admin implements Settings_Admin_Interface {
 
   public function set_test_coords_to( $option_value )  {
     if ( ! is_string( $option_value ) ) {
-      throw new \InvalidArgumentException( 'set_test_mobile_coords_to expects $option_value to be of type string, ' . gettype( $option_value ) . ' given.' );
+      throw new \InvalidArgumentException( 'set_test_coords_to expects $option_value to be of type string, ' . gettype( $option_value ) . ' given.' );
     }
 
     $option_value = str_replace( ' ', '', $option_value );
@@ -285,15 +292,15 @@ class Settings_Admin implements Settings_Admin_Interface {
     $option_values = explode( ',', $option_value );
 
     if ( 2 != count( $option_values ) && '' != $option_value ) {
-      throw new \InvalidArgumentException( 'set_test_mobile_coords_to expects $option_value to have two float values separated by commas, ' . count( $option_values )  . ' value(s) given.');
+      throw new \InvalidArgumentException( 'set_test_coords_to expects $option_value to have two float values separated by commas, ' . count( $option_values )  . ' value(s) given.');
     }
 
     if ( ! is_numeric( trim( $option_values[0] ) ) ) {
-      throw new \InvalidArgumentException( 'set_test_mobile_coords_to expects first part of $option_value to be numeric, ' . gettype( $option_value ) . ' given.' );
+      throw new \InvalidArgumentException( 'set_test_coords_to expects first part of $option_value to be numeric, ' . gettype( $option_value ) . ' given.' );
     }
 
     if ( ! is_numeric( trim( $option_values[1] ) ) ) {
-      throw new \InvalidArgumentException( 'set_test_mobile_coords_to expects second part of $option_value to be numeric, ' . gettype( $option_value ) . ' given.' );
+      throw new \InvalidArgumentException( 'set_test_coords_to expects second part of $option_value to be numeric, ' . gettype( $option_value ) . ' given.' );
     }
 
     $this->admin_settings->set( 'test_mobile_coords_to', $option_value );

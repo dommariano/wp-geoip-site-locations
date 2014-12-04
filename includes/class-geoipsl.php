@@ -8,9 +8,9 @@ if ( ! function_exists( 'add_action' ) && ! function_exists( 'add_filter' ) ) {
 /**
   * Main plugin class.
   *
-  * This class handles the distance calculations and redirects. Users coming from desktops
+  * This class handles redirects. Users coming from desktops
   * will be redirected based on their IP address using the MaxMind GeoIP database or premium
-  * web service. Visitors coming from mobile devices the support HTML5 Geolocaiton APi will
+  * web service. Visitors coming from mobile devices the support HTML5 Geolocaiton API will
   * be redirected using that APi. Visitors coming mobile devices without the HTML5 Geolocation
   * will not be redirected, but instead will be given the option to select the site location
   * they wish to be redirected to ( requires theme integration ).
@@ -155,9 +155,14 @@ class Site_Locations {
     return 2;
   }
 
-  public static function load_desktop_app( array $blog_ids ) {
-  }
-
+  /**
+    * Load our front-end assets for geolocation using the MaxMind JavaScript API.
+    *
+    * @since 0.1.0
+    *
+    * @param none
+    * @return void
+    */
   public static function load_maxmind_js_app() {
     global $geoipsl_settings;
 
@@ -212,7 +217,7 @@ class Site_Locations {
   }
 
   /**
-    * HTML5 Geolocation API will be used here. Thus, JavaScript.
+    * AJAX callback function for determining which site to serve.
     *
     * @since 0.1.0
     *
@@ -291,14 +296,16 @@ class Site_Locations {
   }
 
   /**
-    * Where where are on selected entry point on the root site or
+    * Whether we are on selected entry point on the root site or
     * whether we are on the root site or not.
     *
-    * The entry point will typically be the homr or front page of the
-    * root site.
+    * The entry point will typically be the home or front page of the
+    * root site. We have this function for a future feature where we can specify
+    * some other entry point aside from the home or front page.
     *
     * @since 0.1.0
-    * @todo REMOVE this and use site_entry_point feature instead.
+    *
+    * @param int $blog_id
     */
   public static function is_on_site_entry_point( $blog_id ) {
 
@@ -306,7 +313,7 @@ class Site_Locations {
     global $post;
 
     if ( ! is_int( $blog_id ) ) {
-      throw new InvalidArgumentException( 'is_on_site_entry_point expects $blog_id to be integer, ' . gettype( $blog_id ) . ' given.' );
+      throw new \InvalidArgumentException( 'is_on_site_entry_point expects $blog_id to be integer, ' . gettype( $blog_id ) . ' given.' );
     }
 
     if ( ! $geoipsl_settings->get( 'site_entry_page' ) ) {
@@ -318,19 +325,5 @@ class Site_Locations {
     }
 
     return FALSE;
-  }
-
-  /**
-    * Prefix the retrieved request URI with the appropriate domain/subsite link.
-    *
-    * @since 0.1.0
-    *
-    * @param int $blog_id The blog id of the site to redirect to.
-    * @return void
-    */
-  public static function geocode_request_uri( $blog_id = 1 ) {
-    $blog_url = get_site_url( $blog_id );
-
-    return $blog_url;
   }
 }
