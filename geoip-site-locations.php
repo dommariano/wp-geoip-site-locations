@@ -5,7 +5,7 @@ error_reporting( E_ALL );
 /*
 Plugin Name: GeoIP Site Locations
 Description: Detect user location based on IP or cookie information and redirect to the appropriate geo-targetted version of your site.
-Version: 0.1.0
+Version: 0.1.1
 Author: Dominique Mariano
 Author URI: http://www.twitter.com/miniQueue
 License: GPLv2 or later

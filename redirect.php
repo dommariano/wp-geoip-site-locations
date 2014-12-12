@@ -17,16 +17,16 @@ if ( in_array( $ip, array( '', GEOIPSL_RESERVED_IP, GEOIPSL_INVALID_IP ) ) || ! 
 }
 
 if ( '' == $tracking_info ) {
-  $result   = $geoipsl_reader->query_city( $ip );
-  $lat      = $result->location->latitude;
+	$result   = $geoipsl_reader->query_city( $ip );
+	$lat      = $result->location->latitude;
   $long     = $result->location->longitude;
   $blog_ids = GeoIPSL\Distance::get_closest_site( $lat, $long, 1000 * floatval( $geoipsl_settings->get( 'distance_limit' ) ) );
 
   if ( $geoipsl_reader->is_using_remote_db() ) {
-    $remaining_queries = get_option( geoipsl_prefix_string( 'queries_remaining' ), '' );
-    $remaining_queries = isset( $result->maxmind->queriesRemaining ) ? $result->maxmind->queriesRemaining : $remaining_queries;
-    update_option( geoipsl_prefix_string( 'queries_remaining' ), $remaining_queries );
-  }
+    $remaining_queries = $geoipsl_settings->get( 'maxmind_remaining_queries' );
+    $remaining_queries = (int) isset( $result->maxmind->queriesRemaining ) ? $result->maxmind->queriesRemaining : $remaining_queries;
+		$geoipsl_settings->set( 'maxmind_remaining_queries', $remaining_queries );	
+	}
 } else {
   $blog_ids = GeoIPSL\Cookies::infer_site_preference( $tracking_info );
 }
