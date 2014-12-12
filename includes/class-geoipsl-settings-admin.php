@@ -365,4 +365,11 @@ class Settings_Admin implements Settings_Admin_Interface {
 
     $this->admin_settings->set( 'google_grgc_api_key', $option_value );
   }
+
+	public function set_maxmind_remaining_queries( $option_value ) {
+		if ( ! is_int( $option_value ) ) {
+      throw new \InvalidArgumentException( 'set_maxmind_remaining_queries expects $option_value to be of type string, ' . gettype( $option_value ) . ' given.' );
+    }
+		$this->admin_settings->set( 'maxmind_remaining_queries', $option_value );	
+	}
 }
