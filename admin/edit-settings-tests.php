@@ -1,3 +1,5 @@
+<?php global $geoipsl_settings, $geoipsl_reader; ?>
+
 <form id="geoipsl-settings-keys" action="" method="">
 
   <?php wp_nonce_field( 'geoipsl_settings' ); ?>
@@ -9,7 +11,7 @@
 
   <table class="wp-list-table widefat fixed">
     <tbody>
-      <tr>
+      <!-- <tr>
         <td>
           <?php _e( 'Pick a GeoIP database or service to use.', 'geoipsl' ); ?>
         </td>
@@ -32,7 +34,7 @@
             <?php } unset( $id, $text ); ?>
           </select>
         </td>
-      </tr>
+      </tr> -->
 
       <tr class="alternate">
         <td>
@@ -54,12 +56,12 @@
         </td>
       </tr>
 
-      <tr class="alternate">
+      <!-- <tr class="alternate">
         <td>
           <?php _e( 'Input destination point coordinates, each pair being separated by a new line. Otherwise, coordinates from your actual site options will be used as destination points.', 'geoipsl' ); ?>
         </td>
         <td><textarea name="test_coords_to" placeholder=" Latitude, Longitude"><?php echo $test_coords_to; ?></textarea></td>
-      </tr>
+      </tr> -->
     </tbody>
   </table>
 
@@ -76,17 +78,18 @@
         <td>
           <?php
             $geoipsl_test_case = array(
-              'geoipsl_test_geocode_my_ip'                          => __( 'Covert IP to geolocation information. ',                                      'geoipsl' ),
-              'geoipsl_test_reverse_geocode_coords'                 => __( 'Reverse geocode starting point coordinates.',                                 'geoipsl' ),
+							''																										=> __( 'Select a test case to execute.',																							'geoipsl' ),
+              //'geoipsl_test_geocode_my_ip'                          => __( 'Covert IP to geolocation information. ',                                      'geoipsl' ),
+              //'geoipsl_test_reverse_geocode_coords'                 => __( 'Reverse geocode starting point coordinates.',                                 'geoipsl' ),
               'geoipsl_test_ip_to_destination_coords'               => __( 'Calculate distance of IP to available destination coordinates.',              'geoipsl' ),
               'geoipsl_test_starting_coords_to_destination_coords'  => __( 'Calculate distance of starting coords to available destination coordinates.', 'geoipsl' ),
             );
           ?>
           <select name="geoipsl_test_case">
             <?php
-              foreach ( $geoipsl_test_case as $id => $text ) {
-                echo "<option value=\"$id\">$text</option>";
-              }
+              foreach ( $geoipsl_test_case as $id => $text ) { ?>
+                <option value="<?php echo esc_attr( $id ); ?>" <?php selected( $id, geoipsl_array_value( $_REQUEST, 'geoipsl_test_case', '' ) ); ?>><?php echo esc_attr( $text ); ?></option>
+              <?php }
               unset( $id, $text );
             ?>
           </select>
@@ -97,4 +100,24 @@
   </table>
 
   <br>
+
+<?php if ( 'geoipsl_execute_test' == geoipsl_array_value( $_REQUEST, 'action', '') ) {
+	switch( geoipsl_array_value( $_REQUEST, 'geoipsl_test_case', '' ) ) {
+		case 'geoipsl_test_geocode_my_ip':
+			require_once( GEOIPSL_PLUGIN_DIR . 'admin/edit-settings-tests-geocode-ip.php' );
+			break;
+		case 'geoipsl_test_reverse_geocode_coords':
+			require_once( GEOIPSL_PLUGIN_DIR . 'admin/edit-settings-tests-reverse-geocode.php' );
+			break;
+		case 'geoipsl_test_ip_to_destination_coords':
+			require_once( GEOIPSL_PLUGIN_DIR . 'admin/edit-settings-tests-ip-distances.php' );
+			break;
+		case 'geoipsl_test_starting_coords_to_destination_coords':
+			require_once( GEOIPSL_PLUGIN_DIR . 'admin/edit-settings-tests-coords-distances.php' );
+			break;
+		default:
+			break;
+	}
+
+} ?>
 </form>
