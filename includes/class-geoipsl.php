@@ -139,7 +139,7 @@ class Site_Locations {
         return 1;
       }
 
-      if ( $mobile_detect->isMobile() ) {
+      if ( $mobile_detect->isMobile() || $mobile_detect->isTablet() ) {
         add_action( 'wp_enqueue_scripts', array( __CLASS__ , 'load_mobile_app' ), 1 );
       } else {
         if ( GEOIPSL_ON_STATUS == $geoipsl_settings->get( 'redirect_after_load_status' ) ) {
