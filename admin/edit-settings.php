@@ -79,7 +79,7 @@ $actions = array(
   'geoipsl_site_info_save',
   'geoipsl_site_info_reverse_geocode',
   'geoipsl_site_info_clear_and_save',
-  'geoipsl_config_save'
+  'geoipsl_config_save',	
 );
 
 // set the action to the first encountered action
@@ -204,6 +204,12 @@ if ( $do_action ) {
 
         $query_args[ 'test_coords_to' ] = base64_encode( $option_value );
       }
+
+			if ( isset( $_REQUEST['geoipsl_test_case'] ) ) {
+				$query_args['geoipsl_test_case'] = $_REQUEST['geoipsl_test_case'];
+			}
+
+			$query_args['action'] = 'geoipsl_execute_test';
 
       $send_back = add_query_arg( $query_args, $send_back );
       break;

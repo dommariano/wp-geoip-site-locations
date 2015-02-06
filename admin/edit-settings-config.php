@@ -27,7 +27,7 @@
 
             <label for="persistent_redirect_status">
               <input name="persistent_redirect_status" type="checkbox" id="persistent_redirect_status" value=<?php printf( '"%s"', GEOIPSL_ON_STATUS ); ?> <?php echo checked( $geoipsl_admin_settings->get( 'persistent_redirect_status' ), GEOIPSL_ON_STATUS ); ?> >
-              <?php _e( 'Allow persistent redirect for repeat visitors', 'geoipsl' ); ?>
+              <?php _e( 'Allow persistent redirect for repeat visitors.', 'geoipsl' ); ?>
               <?php
                 $geoipsl_persistent_interval_select = array(
                   0       => __( 'all the time',  'geoipsl' ),
@@ -38,13 +38,13 @@
                 );
               ?>
 
-              <select name="persistence_interval" id="persistence_interval" class="postform">
+              <!-- <select name="persistence_interval" id="persistence_interval" class="postform">
                 <?php
                   foreach ( $geoipsl_persistent_interval_select as $value => $text ) {
                     printf( '<option value="%s" %s >%s</option>', esc_attr( $value ), selected( $value, $geoipsl_admin_settings->get( 'persistence_interval' ) ), esc_attr( $text ) );
                   }
                 ?>
-              </select>
+              </select> -->
             </label>
             <br>
 
