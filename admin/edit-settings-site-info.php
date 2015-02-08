@@ -37,7 +37,7 @@ $location_defaults = array(
   'country_code'  => '',
   'timezone'      => '',
 );
-$location = get_option( geoipsl_prefix_string( 'activated_locations' ), array() );
+$location = get_option( geoipsl( 'activated_locations' ), array() );
 $location = isset( $location[ $id ] ) ? $location[ $id ] : array();
 
 foreach ( $location_defaults as $key => $value ) {

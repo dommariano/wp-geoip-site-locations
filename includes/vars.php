@@ -9,7 +9,7 @@ global $post, $geoipsl_reader, $geoipsl_settings, $geoipsl_admin_settings, $mobi
 
 // setup our plugin
 $geoipsl_reader 						= new GeoIPSL\Reader();
-$geoipsl_settings						= new GeoIPSL\Settings( (array) get_option( geoipsl_prefix_string( 'site_group_head_settings' ), array() ) );
+$geoipsl_settings						= new GeoIPSL\Settings( (array) get_option( geoipsl( 'site_group_head_settings' ), array() ) );
 $geoipsl_db_file_to_use  		= GeoIPSL\Reader::get_path_to_geoip_db_reader( $geoipsl_settings->get( 'geoip_db' ) );
 
 // plugin must automatically download if this is not present

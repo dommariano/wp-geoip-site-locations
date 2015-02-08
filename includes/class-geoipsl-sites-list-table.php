@@ -264,7 +264,7 @@ class Sites_List_Table extends \WP_List_Table {
 
 			list( $columns, $hidden ) = $this->get_column_info();
 
-			$blog_location = get_option( geoipsl_prefix_string( 'activated_locations' ), array() );
+			$blog_location = get_option( geoipsl( 'activated_locations' ), array() );
 
 			foreach ( $columns as $column_name => $column_display_name ) {
 				$style = '';

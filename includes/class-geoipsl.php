@@ -30,13 +30,13 @@ class Site_Locations {
   public static function init() {
 
     // ALWAYS make sure the plugin version is up-to-date.
-    update_option( geoipsl_prefix_string( 'plugin_version' ), GEOIPSL_PLUGIN_VERSION );
+    update_option( geoipsl( 'plugin_version' ), GEOIPSL_PLUGIN_VERSION );
 
     // DO NOT automatically update the database version. We need the old value for incremental database updates.
-    add_option( geoipsl_prefix_string( 'database_version' ), GEOIPSL_DATABASE_VERSION );
+    add_option( geoipsl( 'database_version' ), GEOIPSL_DATABASE_VERSION );
 
     // Every NONEMPTY setting that exists about this plugin.
-    add_option( geoipsl_prefix_string( 'settings' ), array() );
+    add_option( geoipsl( 'settings' ), array() );
 
     add_action( 'template_redirect',                              array( __CLASS__, 'redirect_to_geoip_subsite'        ) );
     add_action( 'wp_ajax_ajax_redirect_to_geoip_subsite',         array( __CLASS__, 'ajax_redirect_to_geoip_subsite'   ) );
@@ -105,7 +105,7 @@ class Site_Locations {
     * @return void
     */
   public static function maybe_update() {
-    $dbversion = get_option( geoipsl_prefix_string( 'database_version' ) );
+    $dbversion = get_option( geoipsl( 'database_version' ) );
 
     $dbversion = abs( $dbversion );
 

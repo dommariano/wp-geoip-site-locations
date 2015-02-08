@@ -19,7 +19,7 @@
         'database'                => sprintf( __( 'GeoLite2 City', 'geoipsl' ), '<b style="color: #d46f15;">', '</b>' ),
         'used_for'                => wpautop( __( 'country, subdivisions, city, postal code, latitude, longitude', 'geoipsl' ) ),
         'last_downloaded'         => ( file_exists( geoipsl_get_file_path( 'GeoLite2-City.mmdb' ) ) ) ? date ( 'd M Y ( D )', filemtime( geoipsl_get_file_path( 'GeoLite2-City.mmdb' ) ) ) : __( 'Never.', 'geoipsl' ),
-        'next_scheduled_download' => get_option( geoipsl_prefix_string( 'geolite2_city_sched_download' ), 0 ),
+        'next_scheduled_download' => get_option( geoipsl( 'geolite2_city_sched_download' ), 0 ),
         'next_source_update'      => date( 'd M Y ( D )', geoipsl_next_schedule_update_for_geolite2_city( 'Tuesday' ) ),
       ),
       array(
@@ -28,7 +28,7 @@
                                      sprintf( __( '%sRequires purchase from MaxMind.%s', 'geoipsl' ), '<span style="color: #d46f15">', '</span>' ),
         'used_for'                => wpautop( __( 'country', 'geoipsl' ) ),
         'last_downloaded'         => ( file_exists( geoipsl_get_file_path( 'GeoIP2-Country.mmdb' ) ) ) ? date ( 'd M Y ( D )', filemtime( geoipsl_get_file_path( 'GeoLite2-City.mmdb' ) ) ) : __( 'Never.', 'geoipsl' ),
-        'next_scheduled_download' => get_option( geoipsl_prefix_string( 'geoip2_country_sched_download' ), 0 ),
+        'next_scheduled_download' => get_option( geoipsl( 'geoip2_country_sched_download' ), 0 ),
         'next_source_update'      => date( 'd M Y ( D )', geoipsl_get_next_day_of_week( 'Tuesday' ) ),
       ),
       array(
@@ -37,7 +37,7 @@
                                     sprintf( __( '%sRequires purchase from MaxMind.%s', 'geoipsl' ), '<span style="color: #d46f15">', '</span>' ),
         'used_for'                => wpautop( __( 'country, subdivisions, city, postal code, latitude, longitude', 'geoipsl' ) ),
         'last_downloaded'         => ( file_exists( geoipsl_get_file_path( 'GeoIP2-City.mmdb' ) ) ) ? date ( 'd M Y ( D )', filemtime( geoipsl_get_file_path( 'GeoLite2-City.mmdb' ) ) ) : __( 'Never.', 'geoipsl' ),
-        'next_scheduled_download' => get_option( geoipsl_prefix_string( 'geoip2_city_sched_download' ), 0 ),
+        'next_scheduled_download' => get_option( geoipsl( 'geoip2_city_sched_download' ), 0 ),
         'next_source_update'      => date( 'd M Y ( D )', geoipsl_get_next_day_of_week( 'Tuesday' ) ),
       )
     );

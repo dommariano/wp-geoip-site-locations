@@ -4,68 +4,57 @@ if ( ! function_exists( 'add_action' ) && ! function_exists( 'add_filter' ) ) {
   exit;
 }
 
-/**
-  * Retrieve the plugin prefix.
-  *
-  * If the GEOIPSL_PREFIX constant is removed, the fuction
-  * will default to 'geoipsl_' as fallback prefix string.
-  *
-  * @since 0.1.0
-  *
-  * @param none
-  * @return string
-  */
-function geoipsl_get_prefix() {
-  if ( ! defined( 'GEOIPSL_PREFIX' ) )
-    return 'geoipsl_';
-
-  return GEOIPSL_PREFIX;
-}
+add_action( 'maxmind_geoip_lite2_city_database', 'geoipsl_download_file', 10, 2 );
+add_action( 'maxmind_geoip2_city_database', 'geoipsl_download_file', 10, 2 );
+add_action( 'maxmind_geoip2_country_database', 'geoipsl_download_file', 10, 2 );
+add_action( 'all_admin_notices', 'geoipsl_admin_notices_on_fresh_install' );
 
 /**
   * Prefix a given string with the defined plugin prefix.
   *
   * @since 0.1.0
   *
-  * @uses GeoIP_Site_Locations_Util::geoipsl_get_prefix()
   * @param string $string The string to be prefixed.
   * @return string
   */
-function geoipsl_prefix_string( $string ) {
-  if ( ! ( is_string( $string ) || is_numeric( $string ) ) )
-    throw new InvalidArgumentException( 'prefix_string expects string or numeric data to be passed. Input was ' . gettype( $string ) );
+function geoipsl( $string ) {
+  if ( ! ( is_string( $string ) || is_numeric( $string ) ) ) {
+    throw new InvalidArgumentException( 'geoipsl() expects string or
+      numeric data to be passed. Input was ' . gettype( $string ) );
+  }
 
-  if ( '' === $string )
-    throw new InvalidArgumentException( 'prefix_string expects non-empty string to be passed. Empty string given.' );
+  if ( '' === $string ) {
+    throw new InvalidArgumentException( 'geoipsl() expects non-empty string
+      to be passed. Empty string given.' );
+  }
 
   // ensure string is fit for use as array key
   $string = sanitize_key( $string );
 
-  // retrieve the plugin prefix safely
-  $prefix = geoipsl_get_prefix();
-
-  return $prefix . $string;
+  return GEOIPSL_PREFIX . $string;
 }
 
 /**
   * Fetch an instance of a WP_List_Table class.
   *
-  * Taken from the get_list_table() function geoipsl_of WordPress.
+  * Taken from the get_list_table() function WordPress.
   *
   * @since 0.1.0
-  *sa
+  *
   * @param string $class The type of the list table, which is the class name.
-  * @param array $args Optional. Arguments to pass to the class. Accepts 'screen'.
-  * @return object|bool Object on success, false if the class does not exist.
+  * @param array $args Optional. Arguments to pass to the class.
+  *   Accepts 'screen'.
+  * @return object | bool Object on success, false if the class does not exist.
   */
 function geoipsl_get_list_table( $class, $args = array() ) {
-  $geoipsl_list_table_classes = array(
+  $list_table_classes = array(
     'GeoIPSL\Sites_List_Table' => 'sites',
   );
 
-  if ( isset( $geoipsl_list_table_classes[ $class ] ) ) {
-    foreach ( (array) $geoipsl_list_table_classes[ $class ] as $required ) {
-      require_once( GEOIPSL_PLUGIN_DIR . 'includes/class-geoipsl-' . $required . '-list-table.php' );
+  if ( isset( $list_table_classes[ $class ] ) ) {
+    foreach ( (array) $list_table_classes[ $class ] as $required ) {
+      require_once( GEOIPSL_PLUGIN_DIR . 'includes/class-geoipsl-' . $required .
+        '-list-table.php' );
     }
 
     if ( isset( $args['screen'] ) )
@@ -87,35 +76,37 @@ function geoipsl_get_list_table( $class, $args = array() ) {
   * @since 0.1.0
   *
   * @param string $geolocation_id The string to be prefixed.
-  * @return array $activated_locations Array of activated locations.
+  * @return array $act_locs Array of activated locations.
   * @todo Save the accents instead of removing them.
   */
 function geoipsl_activate_location( $blog_id, $location ) {
 
   if ( ! is_int( $blog_id ) ) {
-    throw new InvalidArgumentException( 'activate_location expects $blog_id to be integer, ' . gettype( $blog_id ) . ' given.' );
+    throw new InvalidArgumentException( 'activate_location expects $blog_id
+      to be integer, ' . gettype( $blog_id ) . ' given.' );
   }
 
   if ( ! is_array( $location ) ) {
-    throw new InvalidArgumentException( 'activate_location expects $location to be array, ' . gettype( $location ) . ' given.' );
+    throw new InvalidArgumentException( 'activate_location expects $location
+      to be array, ' . gettype( $location ) . ' given.' );
   }
 
-  $activated_locations = get_option( geoipsl_prefix_string( 'activated_locations' ) );
+  $act_locs = get_option( geoipsl( 'act_locs' ) );
 
-  if ( ! is_array( $activated_locations ) ) {
-    $activated_locations = array();
+  if ( ! is_array( $act_locs ) ) {
+    $act_locs = array();
   }
 
   // do not store if a duplicate is found
-  if ( ! in_array( $blog_id, $activated_locations ) ) {
-    $activated_locations[ $blog_id ] = $location;
+  if ( ! in_array( $blog_id, $act_locs ) ) {
+    $act_locs[ $blog_id ] = $location;
 
-    update_option( geoipsl_prefix_string( 'activated_locations' ), $activated_locations );
+    update_option( geoipsl( 'act_locs' ), $act_locs );
 
-    return $activated_locations;
+    return $act_locs;
   }
 
-  return $activated_locations;
+  return $act_locs;
 }
 
 /**
@@ -124,27 +115,29 @@ function geoipsl_activate_location( $blog_id, $location ) {
   * @since 0.1.0
   *
   * @param string $geolocation_id The string to be prefixed.
-  * @return bool|int Boolean FALSE if current user is not allowed to do this or interger number of active locations on success.
+  * @return bool|int Boolean FALSE if current user is not allowed to do this or
+  * interger number of active locations on success.
   */
 function geoipsl_deactivate_location( $blog_id ) {
 
   if ( ! is_int( $blog_id ) ) {
-    throw new InvalidArgumentException( 'deactivate_location expects $blog_id to be integer, ' . gettype( $blog_id ) . ' given.' );
+    throw new InvalidArgumentException( 'deactivate_location expects $blog_id
+       to be integer, ' . gettype( $blog_id ) . ' given.' );
   }
 
-  $activated_locations = get_option( geoipsl_prefix_string( 'activated_locations' ) );
+  $act_locs = get_option( geoipsl( 'act_locs' ) );
 
-  if ( ! is_array( $activated_locations ) ) {
-    $activated_locations = array();
+  if ( ! is_array( $act_locs ) ) {
+    $act_locs = array();
   }
 
   // remove array in the list of active locations
-  if ( array_key_exists( $blog_id, $activated_locations ) ) {
-    unset ( $activated_locations[ $blog_id ] );
-    update_option( geoipsl_prefix_string( 'activated_locations' ), $activated_locations );
+  if ( array_key_exists( $blog_id, $act_locs ) ) {
+    unset ( $act_locs[ $blog_id ] );
+    update_option( geoipsl( 'act_locs' ), $act_locs );
   }
 
-  return get_option( geoipsl_prefix_string( 'activated_locations' ) );
+  return get_option( geoipsl( 'act_locs' ) );
 }
 
 /**
@@ -173,24 +166,32 @@ function geoipsl_wpautop_e( $string, $br = true ) {
   * @throws InvalidArgumentException
   * @return bool|string Boolean FALSE if our plugin dir cannot be found
   */
-function geoipsl_get_file_path( $destination_file_name, $dir = 'data' ) {
-  if ( ! is_string( $destination_file_name ) ) {
-    throw new InvalidArgumentException( 'get_file_path expects $destination_file_name to be string, ' . gettype( $destination_file_name ) . ' given.' );
+function geoipsl_get_file_path( $dest_file_name, $dir = 'data' ) {
+  if ( ! is_string( $dest_file_name ) ) {
+    throw new InvalidArgumentException( 'get_file_path expects
+       $dest_file_name to be string, '
+       . gettype( $dest_file_name ) . ' given.' );
   }
 
   if ( ! is_string( $dir ) ) {
-    throw new InvalidArgumentException( 'get_file_path expects $destination_file_name to be string, ' . gettype( $destination_file_name ) . ' given.' );
+    throw new InvalidArgumentException( 'get_file_path expects
+       $dest_file_name to be string, '
+       . gettype( $dest_file_name ) . ' given.' );
   }
 
-  if ( strpbrk( trim( $destination_file_name, '/' ), "\\/?%*:|\"<>") !== FALSE ) {
-    throw new InvalidArgumentException( 'get_file_path expects $destination_file_name to be a valid file name, ' . $destination_file_name . ' given.' );
+  if ( strpbrk( trim( $dest_file_name, '/' ), "\\/?%*:|\"<>") !== FALSE ) {
+    throw new InvalidArgumentException( 'get_file_path expects
+       $dest_file_name to be a valid file name, '
+       . $dest_file_name . ' given.' );
   }
 
   if ( strpbrk( trim( $dir, '/' ), "\?%*:|\"<>" ) !== FALSE ) {
-    throw new InvalidArgumentException( 'get_file_path expects $dir to be a valid directory name, ' . $dir . ' given.' );
+    throw new InvalidArgumentException( 'get_file_path expects $dir to be a
+       valid directory name, ' . $dir . ' given.' );
   }
 
-  return sprintf( "%s/%s/%s", rtrim( GEOIPSL_PLUGIN_DIR, '/' ), trim( $dir, '/' ), trim( $destination_file_name, '/' ) );
+  return sprintf( "%s/%s/%s", rtrim( GEOIPSL_PLUGIN_DIR, '/' ),
+    trim( $dir, '/' ), trim( $dest_file_name, '/' ) );
 }
 
 /**
@@ -205,10 +206,10 @@ function geoipsl_get_file_path( $destination_file_name, $dir = 'data' ) {
   *                         1 if unable to download source file
   *                         2 if unable to move to target file
   */
-function geoipsl_download_file( $destination_file_name, $source_file_url ) {
+function geoipsl_download_file( $dest_file_name, $source_file_url ) {
 
   // resolve destination file, return FALSE if unable to
-  $destination_file = geoipsl_get_file_path( $destination_file_name );
+  $destination_file = geoipsl_get_file_path( $dest_file_name );
   if ( ! $destination_file || ! $source_file_url ) {
     return FALSE;
   }
@@ -218,6 +219,9 @@ function geoipsl_download_file( $destination_file_name, $source_file_url ) {
 
   // download the source file to a temporary location
   $temporary_file = download_url( $source_file_url );
+
+  echo $temporary_file->get_error_message();
+  wp_die();
 
   // check if WordPress throws an error when downloading the file
   if ( is_wp_error( $temporary_file ) )

@@ -5,12 +5,7 @@ if ( ! function_exists( 'add_action' ) && ! function_exists( 'add_filter' ) ) {
 }
 
 if ( is_admin() ) {
-  add_action( 'maxmind_geoip_lite2_city_database', 'geoipsl_download_file', 10, 2 );
-  add_action( 'maxmind_geoip2_city_database', 'geoipsl_download_file', 10, 2 );
-  add_action( 'maxmind_geoip2_country_database', 'geoipsl_download_file', 10, 2 );
-
-  add_action( 'all_admin_notices', 'geoipsl_admin_notices_on_fresh_install' );
-  /**
+ /**
     * Message to display after FRESH install of this plugin.
     *
     * @since 0.1.0
@@ -20,7 +15,7 @@ if ( is_admin() ) {
   function geoipsl_admin_notices_on_fresh_install() {
 
     // have we just finished the installation process?
-    $is_fresh_instal_complete = get_option( geoipsl_prefix_string( 'first_time_setup_complete' ), 0 );
+    $is_fresh_instal_complete = get_option( geoipsl( 'first_time_setup_complete' ), 0 );
 
     // track install progress with a counter
     $count = 0;
@@ -35,7 +30,7 @@ if ( is_admin() ) {
 
     // display a ready message withing 5 seconds of plugin setup completion or if this notification hasn't been seen yet
     if ( $is_fresh_instal_complete < 0 || abs( $is_fresh_instal_complete - abs( time() ) ) < 5 ) {
-      update_option( geoipsl_prefix_string( 'first_time_setup_complete' ), time() );
+      update_option( geoipsl( 'first_time_setup_complete' ), time() );
       ?>
       <div class="updated">
         <?php geoipsl_wpautop_e( sprintf( __( 'Installation complete for %sGeoIP Site Locations%s. You may now begin using this plugin to redirect your site visitors to appropriate version of your website.', 'geoipsl' ), '<b>', '</b>' ) ); ?>
@@ -50,7 +45,7 @@ if ( is_admin() ) {
 
     // if the initial setup is complete, remember it
     if ( 100 == $progress ) {
-      update_option( geoipsl_prefix_string( 'first_time_setup_complete' ), -1 * time() );
+      update_option( geoipsl( 'first_time_setup_complete' ), -1 * time() );
     }
 
     // display a nag notification while update is not yet complete
