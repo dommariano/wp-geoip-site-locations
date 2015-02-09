@@ -220,12 +220,13 @@ function geoipsl_download_file( $dest_file_name, $source_file_url ) {
   // download the source file to a temporary location
   $temporary_file = download_url( $source_file_url );
 
-  echo $temporary_file->get_error_message();
-  wp_die();
+    // check if WordPress throws an error when downloading the file
+  if ( is_wp_error( $temporary_file ) ) {
+    echo $temporary_file->get_error_message();
+    wp_die();
 
-  // check if WordPress throws an error when downloading the file
-  if ( is_wp_error( $temporary_file ) )
     return $temporary_file->get_error_message();
+  }
 
   // no errors, but does the file really exist and is accessible?
   if ( ! file_exists( $temporary_file ) ) {
@@ -260,17 +261,17 @@ function geoipsl_download_file( $dest_file_name, $source_file_url ) {
 
   if ( 'gz' == $file_ext ) {
     // close connections to temporary source file and target file
-    gzopen( $temporary_file );
+    gzclose( $input_file );
   } else {
     // close connections to temporary source file and target file
-    fclose( $temporary_file );
+    fclose( $input_file );
   }
 
   fclose( $output_file );
 
 
   // if we're unable to move anything to the new destination file
-  if ( ! $output_file || ! file_exists( $output_file ) )
+  if ( ! $destination_file || ! file_exists( $destination_file ) )
     return 2;
 
   // delete the temporary file

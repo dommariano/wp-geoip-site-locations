@@ -62,4 +62,8 @@ register_activation_hook(   __FILE__, array( 'GeoIPSL\Site_Locations', 'maybe_up
 register_deactivation_hook( __FILE__, array( 'GeoIPSL\Site_Locations', 'maybe_uninstall'  ) );
 add_action( 'init', array( 'GeoIPSL\Site_Locations', 'init' ) );
 
-geoipsl_download_file( 'GeoLite2-City.mmdb', 'http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.mmdb.gz' );
+require_once( ABSPATH.'/wp-admin/includes/file.php');
+$temp = geoipsl_download_file( 'books4.jpg',  'http://www.librarysample.org/homer/images/sitepics/books4.jpg' );
+print_r( $temp );
+wp_die();
+

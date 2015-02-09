@@ -8,6 +8,7 @@ use Geocoder\Provider\GoogleMapsProvider;
 global $geoipsl_settings;
 global $geoipsl_admin_settings;
 
+include_once( ABSPATH . 'wp-admin/includes/class-wp-upgrader.php' );
 // this screen is only for users who are administrators or at least users who can manage options
 if ( ! current_user_can( 'manage_options' ) )
   wp_die( __( 'Cheatin&#8217; uh?' ) );
@@ -21,7 +22,7 @@ if ( isset( $_REQUEST['tab'] ) && in_array( $_REQUEST['tab'] , array( 'sites', '
 }
 
 // any alternate content other than the default
-if ( isset( $_REQUEST['tab-content'] ) && in_array( $_REQUEST['tab-content'] , array( 'site-info' ) ) ) {
+if ( isset( $_REQUEST['tab-content'] ) && in_array( $_REQUEST['tab-content'] , array( 'site-info', 'databases-upload', 'databases-delete', 'databases-unzip' ) ) ) {
   $current_content = $_REQUEST['tab-content'];
 }
 
@@ -79,7 +80,10 @@ $actions = array(
   'geoipsl_site_info_save',
   'geoipsl_site_info_reverse_geocode',
   'geoipsl_site_info_clear_and_save',
-  'geoipsl_config_save',	
+  'geoipsl_config_save',
+  'geoipsl_upload_mmdb_zip',
+  'geoipsl_delete_mmdb_zip',
+  'geoipsl_cancel_del_mmdb_zip',
 );
 
 // set the action to the first encountered action
@@ -100,10 +104,85 @@ if ( $do_action ) {
   $send_back = remove_query_arg( array_keys( $actions ), wp_get_referer( ) );
 
   if ( ! $send_back ) {
-    $send_back = admin_url( 'admin.php?page=geoip-site-locations/geoip-site-locations.php/' );
+    $send_back = self_admin_url( 'admin.php?page=geoip-site-locations/geoip-site-locations.php/' );
   }
 
   switch ( $do_action ) {
+    case 'geoipsl_cancel_del_mmdb_zip':
+      $query_args = array();
+
+      $query_args[] = 'tab-content';
+
+      $send_back = remove_query_arg( $query_args, $send_back );
+
+      break;
+    case 'geoipsl_delete_mmdb_zip':
+      $files = isset( $_REQUEST['files'] ) ? $_REQUEST['files'] : array();
+      $deleted = array();
+      $failed = array();
+
+      if ( ! is_array( $files ) ) {
+        $files = (array) $files;
+      }
+
+      foreach ( $files as $file ) {
+        if ( unlink( geoipsl_get_file_path( $file, 'data' ) ) ) {
+          $deleted[] = $file;
+        } else {
+          $failed[] = $file;
+        }
+      }
+
+      unset( $files, $file );
+
+      $query_args = array();
+
+      $query_args['deleted'] = implode( ',', $deleted );
+      $query_args['not_deleted'] = implode( ',', $failed );
+
+      $send_back = add_query_arg( $query_args, $send_back );
+
+      $query_args = array();
+
+      $query_args[] = 'tab-content';
+
+      $send_back = remove_query_arg( $query_args, $send_back );
+
+      break;
+
+    case 'geoipsl_upload_mmdb_zip':
+      // upload the file to the uploads folder
+      $file_upload = new File_Upload_Upgrader( 'mmdbzip', 'package' );
+
+      // the file name without the .gz extension
+      $file_name = str_replace( array( '.gz' ), '', $file_upload->filename );
+
+      // acceptable file names to be uploaded
+      $limit_files_to = array(
+        'GeoIP2-City.mmdb',
+        'GeoIP2-Country.mmdb',
+        'GeoLite2-City.mmdb',
+      );
+
+      $query_args = array();
+
+      if ( in_array( $file_name, $limit_files_to ) ) {
+        // extract it to the data/ folder
+        geoipsl_unzip_file( $file_name, $file_upload->package );
+        $query_args['upload_status'] = 'success';
+        $query_args['file'] = $file_upload->filename;
+      } else {
+        $query_args['upload_status'] = 'error';
+        $query_args['file'] = $file_upload->filename;
+      }
+
+      // make sure you delete the source file after moving it to the data/ folder
+      $file_upload->cleanup();
+
+      $send_back = add_query_arg( $query_args, $send_back );
+
+      break;
+
     case 'geoipsl_save_database':
       $geoipsl_admin_settings->set_geoip_db( geoipsl_request_value( 'geoip_db', 1 ) );
       break;
@@ -205,11 +284,11 @@ if ( $do_action ) {
         $query_args[ 'test_coords_to' ] = base64_encode( $option_value );
       }
 
-			if ( isset( $_REQUEST['geoipsl_test_case'] ) ) {
-				$query_args['geoipsl_test_case'] = $_REQUEST['geoipsl_test_case'];
-			}
+      if ( isset( $_REQUEST['geoipsl_test_case'] ) ) {
+              $query_args['geoipsl_test_case'] = $_REQUEST['geoipsl_test_case'];
+      }
 
-			$query_args['action'] = 'geoipsl_execute_test';
+      $query_args['action'] = 'geoipsl_execute_test';
 
       $send_back = add_query_arg( $query_args, $send_back );
       break;
@@ -384,54 +463,75 @@ if ( $do_action ) {
 }
 
 
-$geoip_test_database_or_service   = geoipsl_request_or_saved_value( 'geoip_test_database_or_service' );
-$geoip_test_ip                    = geoipsl_request_or_saved_value( 'geoip_test_ip', '', GEOIPSL_INVALID_IP );
-$geoip_test_database_or_service   = geoipsl_request_or_saved_value( 'geoip_test_database_or_service' );
-$test_mobile_coords_from          = geoipsl_request_or_saved_value( 'test_mobile_coords_from', '', GEOIPSL_INVALID_TEST_COORDINATE );
-$test_coords_to                   = geoipsl_request_or_saved_value( 'test_coords_to', '', GEOIPSL_INVALID_TEST_COORDINATE, 'base64_decode' );
+$geoip_test_database_or_service = geoipsl_request_or_saved_value( 'geoip_test_database_or_service' );
+$geoip_test_ip                  = geoipsl_request_or_saved_value( 'geoip_test_ip', '', GEOIPSL_INVALID_IP );
+$geoip_test_database_or_service = geoipsl_request_or_saved_value( 'geoip_test_database_or_service' );
+$test_mobile_coords_from        = geoipsl_request_or_saved_value( 'test_mobile_coords_from', '', GEOIPSL_INVALID_TEST_COORDINATE );
+$test_coords_to                 = geoipsl_request_or_saved_value( 'test_coords_to', '', GEOIPSL_INVALID_TEST_COORDINATE, 'base64_decode' );
 
 
 // notification messages
-$messages = array();
+$nags = $messages = array();
 
 if ( in_array( $geoipsl_settings->get( 'geoip_db' ), array( 2, 3 ) ) && '' == $geoipsl_settings->get( 'maxmind_license_key' ) ) {
-  $messages[] = sprintf( __( 'Please supply your MaxMind license key in order to use the %s database.', 'geoipsl' ), '' );
+  $nags[] = sprintf( __( 'Please supply your MaxMind license key in order to use the %s database.', 'geoipsl' ), '' );
 }
 
 if ( in_array( $geoipsl_settings->get( 'service_db_to_use' ), array( 1, 2, 3 ) ) && '' == $geoipsl_settings->get( 'maxmind_license_key' ) ) {
-  $messages[] = sprintf( __( 'Please supply your MaxMind license key in order to use the %s web service.', 'geoipsl' ), '' );
+  $nags[] = sprintf( __( 'Please supply your MaxMind license key in order to use the %s web service.', 'geoipsl' ), '' );
 }
 
 if ( in_array( $geoipsl_settings->get( 'service_db_to_use' ), array( 1, 2, 3 ) ) && '' == $geoipsl_settings->get( 'maxmind_user_id' ) ) {
-  $messages[] = sprintf( __( 'Please supply your MaxMind user id in order to use the %s web service.', 'geoipsl' ), '' );
+  $nags[] = sprintf( __( 'Please supply your MaxMind user id in order to use the %s web service.', 'geoipsl' ), '' );
 }
 
 if ( GEOIPSL_INVALID_TEST_DATABASE_OR_SERVICE == $geoipsl_settings->get( 'geoip_test_database_or_service' ) && 'tests' == $current_tab ) {
-  $messages[] = sprintf( __( 'Please choose a database or web service to test against.', 'geoipsl' ), '' );
+  $nags[] = sprintf( __( 'Please choose a database or web service to test against.', 'geoipsl' ), '' );
 }
 
 if ( GEOIPSL_INVALID_IP == geoipsl_request_value( 'geoip_test_ip' ) && 'tests' == $current_tab ) {
-  $messages[] = sprintf( __( 'Please provide a valid and non-reserved IP address.', 'geoipsl' ), '' );
+  $nags[] = sprintf( __( 'Please provide a valid and non-reserved IP address.', 'geoipsl' ), '' );
 }
 
 if ( GEOIPSL_INVALID_TEST_COORDINATE == geoipsl_request_value( 'test_mobile_coords_from' ) && 'tests' == $current_tab ) {
-  $messages[] = sprintf( __( 'Please provide an valid coordinate pair in the following format: <code>latitude, longitude</code>.', 'geoipsl' ), '' );
+  $nags[] = sprintf( __( 'Please provide an valid coordinate pair in the following format: <code>latitude, longitude</code>.', 'geoipsl' ), '' );
 }
 
 if ( GEOIPSL_INVALID_TEST_COORDINATE == geoipsl_request_value( 'test_coords_to', '', NULL, 'base64_decode' ) && 'tests' == $current_tab ) {
-  $messages[] = sprintf( __( 'Please provide an valid coordinate pair in the following format: <code>latitude, longitude</code>. If you have multiple pairs, separate them by a new line.', 'geoipsl' ), '' );
+  $nags[] = sprintf( __( 'Please provide an valid coordinate pair in the following format: <code>latitude, longitude</code>. If you have multiple pairs, separate them by a new line.', 'geoipsl' ), '' );
 }
 
 // TODO: should be global warning no matter where you are
 if ( $geoipsl_settings->get( 'geoip_test_ip' ) ) {
-  $messages[] = sprintf( __( 'Debugging is turned on. This means that your site will be geolocated based on the fixed IP you provided %shere%s.', 'geoipsl' ), '<a href="' . admin_url( 'admin.php?page=geoip-site-locations/geoip-site-locations.php/&tab=tests' ) . '">', '</a>' );
+  $nags[] = sprintf( __( 'Debugging is turned on. This means that your site will be geolocated based on the fixed IP you provided %shere%s.', 'geoipsl' ), '<a href="' . admin_url( 'admin.php?page=geoip-site-locations/geoip-site-locations.php/&tab=tests' ) . '">', '</a>' );
 }
 
-foreach ( $messages as  $nag ) {
-  echo '<div id="message" class="update-nag">' . $nag . '</div>';
+if ( 'error' == geoipsl_request_value( 'upload_status' ) ) {
+  $nags[] = sprintf( __( 'Cannot upload file %s. Please upload a valid MMDB file, or MMDB ZIP file.', 'geoipsl' ), geoipsl_request_value( 'file' ) );
+}
+
+if ( 'success' == geoipsl_request_value( 'upload_status' ) ) {
+  $messages[] = sprintf( __( 'Uploaded file %s', 'geoipsl' ), geoipsl_request_value( 'file' ) );
+}
+
+if ( geoipsl_request_value( 'deleted' ) ) {
+  $messages[] = sprintf( __( 'Deleted %s.', 'geoipsl' ), str_replace( ',', ', ', geoipsl_request_value( 'deleted' ) ) );
+}
+
+foreach ( $nags as  $nag ) {
+  echo '<div class="update-nag">' . $nag . '</div>';
+}
+
+foreach ( $messages as $message ) {
+  echo '<div class="updated">' . wpautop( $message ) . '</div>';
 }
 ?>
 <div class="wrap">
+
+<h2><?php _e( 'GeoIP Site Locations', 'geoipsl' ); ?><span class="title-count geoipsl-count"><?php echo geoipsl_get_active_loc_count(); ?></span></h2>
+
+  <p><?php _e( 'Detect user location based on IP or cookie information and redirect to the appropriate geo-targetted version of your site.' ); ?></p>
+
   <h2 class="nav-tab-wrapper">
     <?php
       foreach ( $navigation_tabs as  $navigation_tab ) {
