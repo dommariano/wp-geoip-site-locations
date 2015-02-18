@@ -70,13 +70,6 @@
               </label>
               <br>
 
-              <label for="mobile_high_accuracy_status">
-                <input name="mobile_high_accuracy_status" type="checkbox" id="mobile_high_accuracy_status" value=<?php printf( '"%s"', GEOIPSL_ON_STATUS ); ?> <?php echo checked( $geoipsl_admin_settings->get( 'mobile_high_accuracy_status' ), GEOIPSL_ON_STATUS ); ?>>
-                <?php _e( 'Enable high accuracy tracking on mobile devices.', 'geoipsl' ); ?>
-              </label>
-              <br>
-
-              <p class="description"><?php _e( 'Use high accuracy if you really need the exact user location. This is an expensive process that <i>may</i> involve the use of GPS.', 'geoipsl' ); ?></p>
             </fieldset>
           </td>
       </tr>

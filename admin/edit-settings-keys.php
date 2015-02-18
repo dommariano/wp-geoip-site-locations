@@ -22,7 +22,7 @@
     </tbody>
   </table>
 
-  <h3><?php _e( 'Google Distance Matrix API' ); ?></h3>
+  <!-- <h3><?php _e( 'Google Distance Matrix API' ); ?></h3>
   <p><?php _e( 'You may optionally opt to use the Google Distance Matrix web service when geotargetting based on how far or near the site visitor is relative to an arbitrary point. By default, our geotargetting distance logic will use <b>geodesic</b> calculations instead of actual <b>travelling distance.</b>' ); ?></p>
 
   <table class="wp-list-table widefat fixed">
@@ -37,7 +37,7 @@
         <td><input type="text" name="google_gdm_client_id_crypto_key" placeholder="Private Cryptographic Key" value="<?php echo esc_attr( $geoipsl_admin_settings->get_google_gdm_client_id_crypto_key() ); ?>"></td>
       </tr>
     </tbody>
-  </table>
+  </table> -->
 
   <h3><?php _e( 'Google Reverse Geo-Coding API' ); ?></h3>
   <p><?php _e( 'You may optionally specify your API Key for use in Google Reverse GeoCoding API. This API is only used on the admin area for turning the latitudes and longitudes you provided into a human-readable address.' ); ?></p>
