@@ -30,11 +30,11 @@ if ( $geoipsl_settings->get( 'geoip_web_service' ) &&
 	) );
 
 	// if were are running out of queries, let's go back to using local dbs
-	if ( '' == $geoipsl_settings->get( 'maxmind_remaining_queries' ) || $geoipsl_settings->get( 'maxmind_remaining_queries' ) >= 100 ) {
-		$geoipsl_reader->set_to_use_remote_db();		
+	if ( geoipsl_get_remaining_queries( $geoipsl_settings->get( 'geoip_web_service' ) ) >= 100 ) {
+		$geoipsl_reader->set_to_use_remote_db();
 	} else {
 		$geoipsl_reader->set_to_use_geoip_db();
-	}		
+	}
 }
 
 $mobile_detect = new Mobile_Detect();
