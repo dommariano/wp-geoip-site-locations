@@ -61,9 +61,3 @@ register_activation_hook(   __FILE__, array( 'GeoIPSL\Site_Locations', 'maybe_de
 register_activation_hook(   __FILE__, array( 'GeoIPSL\Site_Locations', 'maybe_update'     ) );
 register_deactivation_hook( __FILE__, array( 'GeoIPSL\Site_Locations', 'maybe_uninstall'  ) );
 add_action( 'init', array( 'GeoIPSL\Site_Locations', 'init' ) );
-
-require_once( ABSPATH.'/wp-admin/includes/file.php');
-$temp = geoipsl_download_file( 'books4.jpg',  'http://www.librarysample.org/homer/images/sitepics/books4.jpg' );
-print_r( $temp );
-wp_die();
-

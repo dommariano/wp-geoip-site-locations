@@ -26,11 +26,11 @@ if ( ! function_exists( 'add_action' ) && ! function_exists( 'add_filter' ) ) {
   */
 
 class Settings implements Settings_Interface {
-	private $settings;
+  private $settings;
 
-	public function __construct( array $settings ) {
-		$this->settings = $settings;
-	}
+  public function __construct( array $settings ) {
+    $this->settings = $settings;
+  }
 
   public function get( $unprefixed_option_name ) {
     if ( ! is_string( $unprefixed_option_name ) ) {

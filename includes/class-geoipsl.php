@@ -84,26 +84,26 @@ class Site_Locations {
   }
 
   /**
-    * When plugin is deleted from admin, ask the user if
-    * they want to delete the database tables and other data as well.
-    *
-    * @since 0.1.0
-    *
-    * @param none
-    * @return void
-    */
+   * When plugin is deleted from admin, ask the user if
+   * they want to delete the database tables and other data as well.
+   *
+   * @since 0.1.0
+   *
+   * @param none
+   * @return void
+   */
   public static function maybe_uninstall() {
   }
 
   /**
-    * Install fresh database tables on first install or update the database if this is a
-    * update for the plugin.
-    *
-    * @since 0.1.0
-    *
-    * @param none
-    * @return void
-    */
+   * Install fresh database tables on first install or update the database if this is a
+   * update for the plugin.
+   *
+   * @since 0.1.0
+   *
+   * @param none
+   * @return void
+   */
   public static function maybe_update() {
     $dbversion = get_option( geoipsl( 'database_version' ) );
 
@@ -120,13 +120,13 @@ class Site_Locations {
   }
 
   /**
-    * Redirect to appropriate GeoIP subsite.
-    *
-    * @since 0.1.0
-    *
-    * @param none
-    * @return void
-    */
+   * Redirect to appropriate GeoIP subsite.
+   *
+   * @since 0.1.0
+   *
+   * @param none
+   * @return void
+   */
   public static function redirect_to_geoip_subsite() {
 
     global $geoipsl_settings;
@@ -156,13 +156,13 @@ class Site_Locations {
   }
 
   /**
-    * Load our front-end assets for geolocation using the MaxMind JavaScript API.
-    *
-    * @since 0.1.0
-    *
-    * @param none
-    * @return void
-    */
+   * Load our front-end assets for geolocation using the MaxMind JavaScript API.
+   *
+   * @since 0.1.0
+   *
+   * @param none
+   * @return void
+   */
   public static function load_maxmind_js_app() {
     global $geoipsl_settings;
 
@@ -217,13 +217,13 @@ class Site_Locations {
   }
 
   /**
-    * AJAX callback function for determining which site to serve.
-    *
-    * @since 0.1.0
-    *
-    * @param none
-    * @return void
-    */
+   * AJAX callback function for determining which site to serve.
+   *
+   * @since 0.1.0
+   *
+   * @param none
+   * @return void
+   */
   public static function ajax_redirect_to_geoip_subsite() {
     global $geoipsl_settings;
 
@@ -267,13 +267,13 @@ class Site_Locations {
   }
 
   /**
-    * Redirect users who are using desktop devices.
-    *
-    * @since 0.1.0
-    *
-    * @param none
-    * @return void
-    */
+   * Redirect users who are using desktop devices.
+   *
+   * @since 0.1.0
+   *
+   * @param none
+   * @return void
+   */
   public static function redirect_to_geoip_desktop_subsite( ) {
 
     global $geoipsl_settings;
@@ -296,17 +296,17 @@ class Site_Locations {
   }
 
   /**
-    * Whether we are on selected entry point on the root site or
-    * whether we are on the root site or not.
-    *
-    * The entry point will typically be the home or front page of the
-    * root site. We have this function for a future feature where we can specify
-    * some other entry point aside from the home or front page.
-    *
-    * @since 0.1.0
-    *
-    * @param int $blog_id
-    */
+   * Whether we are on selected entry point on the root site or
+   * whether we are on the root site or not.
+   *
+   * The entry point will typically be the home or front page of the
+   * root site. We have this function for a future feature where we can specify
+   * some other entry point aside from the home or front page.
+   *
+   * @since 0.1.0
+   *
+   * @param int $blog_id
+   */
   public static function is_on_site_entry_point( $blog_id ) {
 
     global $geoipsl_settings;
