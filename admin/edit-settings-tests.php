@@ -42,7 +42,6 @@
         </td>
         <td>
           <input value="<?php echo esc_attr( $geoip_test_ip ); ?>" name="geoip_test_ip" placeholder=" IP">
-          <?php submit_button( __( 'Use Mine', 'geoipsl' ), 'secondary', 'geoipsl_test_my_ip', false ); ?>
         </td>
       </tr>
 
@@ -52,7 +51,6 @@
         </td>
         <td>
           <input value="<?php echo ( $test_mobile_coords_from ) ? $test_mobile_coords_from : ''; ?>" name="test_mobile_coords_from" placeholder=" Latitude, Longitude">
-          <?php submit_button( __( 'Use Mine', 'geoipsl' ), 'secondary', 'geoipsl_test_my_coords', false ); ?>
         </td>
       </tr>
 

@@ -181,7 +181,7 @@ class Distance {
       throw new InvalidArgumentException( 'get_closest_site expects $limit to be integer, ' . gettype( $limit ) . ' given.' );
     }
 
-    $site_locations = get_option( geoipsl_prefix_string( 'activated_locations' ), array() );
+    $site_locations = get_option( geoipsl( 'activated_locations' ), array() );
     $site_distances = array();
     $closest_sites = array( 1 );
 

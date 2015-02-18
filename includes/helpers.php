@@ -4,68 +4,213 @@ if ( ! function_exists( 'add_action' ) && ! function_exists( 'add_filter' ) ) {
   exit;
 }
 
-/**
-  * Retrieve the plugin prefix.
-  *
-  * If the GEOIPSL_PREFIX constant is removed, the fuction
-  * will default to 'geoipsl_' as fallback prefix string.
-  *
-  * @since 0.1.0
-  *
-  * @param none
-  * @return string
-  */
-function geoipsl_get_prefix() {
-  if ( ! defined( 'GEOIPSL_PREFIX' ) )
-    return 'geoipsl_';
-
-  return GEOIPSL_PREFIX;
-}
+add_action( 'all_admin_notices', 'geoipsl_admin_notices_on_fresh_install' );
 
 /**
-  * Prefix a given string with the defined plugin prefix.
-  *
-  * @since 0.1.0
-  *
-  * @uses GeoIP_Site_Locations_Util::geoipsl_get_prefix()
-  * @param string $string The string to be prefixed.
-  * @return string
-  */
-function geoipsl_prefix_string( $string ) {
-  if ( ! ( is_string( $string ) || is_numeric( $string ) ) )
-    throw new InvalidArgumentException( 'prefix_string expects string or numeric data to be passed. Input was ' . gettype( $string ) );
-
-  if ( '' === $string )
-    throw new InvalidArgumentException( 'prefix_string expects non-empty string to be passed. Empty string given.' );
+ * Prefix a given string with the defined plugin prefix.
+ *
+ * @since 0.1.0
+ *
+ * @param string $string The string to be prefixed.
+ * @return string The prefixed string.
+ */
+function geoipsl( $string ) {
+  if ( !  is_string( $string ) )
+    return false;
 
   // ensure string is fit for use as array key
   $string = sanitize_key( $string );
 
-  // retrieve the plugin prefix safely
-  $prefix = geoipsl_get_prefix();
-
-  return $prefix . $string;
+  return GEOIPSL_PREFIX . $string;
 }
 
 /**
-  * Fetch an instance of a WP_List_Table class.
-  *
-  * Taken from the get_list_table() function geoipsl_of WordPress.
-  *
-  * @since 0.1.0
-  *sa
-  * @param string $class The type of the list table, which is the class name.
-  * @param array $args Optional. Arguments to pass to the class. Accepts 'screen'.
-  * @return object|bool Object on success, false if the class does not exist.
-  */
+ * Get number of active locations.
+ *
+ * @since 0.3.0
+ *
+ * @return int Number of active locations.
+ * @todo Re-implement this function to retrieve count directly from the
+ * database. For performance issues.
+ */
+function geoipsl_get_active_loc_count() {
+
+  $activated_locations = get_option( geoipsl( 'activated_locations' ), array() );
+
+  return count( $activated_locations );
+}
+
+/**
+ * Get remaining queries MaxMind web service.
+ *
+ * @since 0.3.0
+ *
+ * @param int Integer code for MaxMind service.
+ */
+function geoipsl_get_remaining_queries( $web_service ) {
+  global $geoipsl_settings, $geoipsl_admin_settings;
+
+  if ( ! is_int( $web_service ) )
+    return 0;
+
+  switch ( $web_service ) {
+    case 1: // country
+      return (int) $geoipsl_settings->get( 'country_queries_left' );
+      break;
+    case 2: // precision city
+      return (int) $geoipsl_settings->get( 'city_queries_left' );
+      break;
+    case 3:
+      return (int) $geoipsl_settings->get( 'insights_queries_left' );
+      break;
+    default:
+      return 0;
+      break;
+  }
+
+  return 0;
+}
+
+function geoipsl_set_maxmind_queries( $web_service, $remaining ) {
+  global $geoipsl_settings, $geoipsl_admin_settings;
+
+  if ( ! is_int( $remaining ) )
+    $remaining = (int) $remaining;
+
+  if ( ! is_int( $web_service ) )
+    $web_service = (int) $web_service;
+
+  switch ( $web_service ) {
+    case 1: // country
+      $queries = $geoipsl_settings->get( 'country_queries' );
+      $geoipsl_settings->set( 'country_queries', ++$queries );
+
+      return (int) $geoipsl_settings->set( 'country_queries_left', $remaining );
+      break;
+    case 2: // precision city
+      $queries = $geoipsl_settings->get( 'city_queries' );
+      $geoipsl_settings->set( 'city_queries', ++$queries );
+
+      return (int) $geoipsl_settings->set( 'city_queries_left', $remaining );
+      break;
+    case 3:
+      $queries = $geoipsl_settings->get( 'insights_queries' );
+      $geoipsl_settings->set( 'insights_queries', ++$queries );
+
+      return (int) $geoipsl_settings->set( 'insights_queries_left', $remaining );
+      break;
+  }
+
+  return 0;
+
+}
+
+/**
+ * Check if the array of files, or given file, exists in the data folder.
+ *
+ * @since 0.3.0
+ *
+ * @param string | array $files The string or array of file names to check if
+ *        they exist in the data folder.
+ * @param string $filter Acts as a logical operator to check if 'all' or 'some'
+ *        files exists.
+ * @return bool Returns Boolean value depending on how many files are found
+ *        depending on the $filter. 'all' will return TRUE if all given files
+ *        exist. 'some' will return TRUE if at least one files exists.
+ */
+function geoipsl_data_files_exist( $files, $filter = 'some' ) {
+
+  $file_count = 0;
+
+  // if string is passed, we can work with comma-separated file names
+  if ( is_string( $files ) ) {
+    $files = explode( ',', $files );
+  // otherwise return false if we do not have an array of file names
+  } else if ( ! is_array( $files ) ) {
+    return false;
+  }
+
+  foreach( $files as $file ) {
+    if ( file_exists( geoipsl_get_file_path( $file, 'data' ) ) ) {
+      $file_count++;
+    }
+  }
+
+  if ( ! in_array( $filter, array( 'some', 'all' ) ) )
+    $filter = 'some';
+
+  if ( $file_count > 0 && 'some' == $filter )
+    return true;
+
+  if ( $file_count == count( $files ) && 'all' == $filter )
+    return true;
+
+  return false;
+}
+
+/**
+ * Check the last time the data file is last modified.
+ *
+ * @since 0.3.0
+ *
+ * @param string $file The file name to check relative to the data/ folder.
+ * @return string Date modified or "Never." if file does not exist.
+ */
+function geoipsl_last_uploaded( $file ) {
+  return ( file_exists( geoipsl_get_file_path( $file ) ) ) ? date ( 'd M Y ( D )', filemtime( geoipsl_get_file_path( $file ) ) ) :  __( 'Never.', 'geoipsl' );
+}
+
+/**
+ * Generate row actions HTML code.
+ *
+ * @since 0.3.0
+ *
+ * @param array $actions Array of classes mapped to URLs.
+ * @return string $output HTML code of row actions.
+ */
+function geoipsl_row_actions( $actions ) {
+  if ( ! is_array( $actions ) || empty( $actions ) )
+    return '';
+
+  $output = '<div class="row-actions">';
+  $count  = 0;
+  $len    = count( $actions );
+
+  foreach( $actions as $key => $url ) {
+    $count++;
+    $output .= sprintf( '<span class="%s"><span class="%s"><a href="%s">%s</a></span></span>', esc_attr( $key ), esc_attr( $key ), esc_url( $url ), ucwords( $key ) );
+
+    if ( $count < $len ) {
+      $output .= " | ";
+    }
+  }
+
+  $output .= '</div>';
+
+  return $output;
+}
+
+/**
+ * Fetch an instance of a WP_List_Table class.
+ *
+ * Taken from the get_list_table() function WordPress.
+ *
+ * @since 0.1.0
+ *
+ * @param string $class The type of the list table, which is the class name.
+ * @param array $args Optional. Arguments to pass to the class.
+ *   Accepts 'screen'.
+ * @return object | bool Object on success, false if the class does not exist.
+ */
 function geoipsl_get_list_table( $class, $args = array() ) {
-  $geoipsl_list_table_classes = array(
+  $list_table_classes = array(
     'GeoIPSL\Sites_List_Table' => 'sites',
   );
 
-  if ( isset( $geoipsl_list_table_classes[ $class ] ) ) {
-    foreach ( (array) $geoipsl_list_table_classes[ $class ] as $required ) {
-      require_once( GEOIPSL_PLUGIN_DIR . 'includes/class-geoipsl-' . $required . '-list-table.php' );
+  if ( isset( $list_table_classes[ $class ] ) ) {
+    foreach ( (array) $list_table_classes[ $class ] as $required ) {
+      require_once( GEOIPSL_PLUGIN_DIR . 'includes/class-geoipsl-' . $required .
+        '-list-table.php' );
     }
 
     if ( isset( $args['screen'] ) )
@@ -82,25 +227,20 @@ function geoipsl_get_list_table( $class, $args = array() ) {
 }
 
 /**
-  * Activate a given GeoIP location.
-  *
-  * @since 0.1.0
-  *
-  * @param string $geolocation_id The string to be prefixed.
-  * @return array $activated_locations Array of activated locations.
-  * @todo Save the accents instead of removing them.
-  */
-function geoipsl_activate_location( $blog_id, $location ) {
+ * Activate a given GeoIP location.
+ *
+ * @since 0.1.0
+ *
+ * @param string $geolocation_id The string to be prefixed.
+ * @return array $activated_locations Array of activated locations.
+ * @todo Save the accents instead of removing them.
+ */
+function geoipsl_activate_location( $blog_id, array $location ) {
 
-  if ( ! is_int( $blog_id ) ) {
-    throw new InvalidArgumentException( 'activate_location expects $blog_id to be integer, ' . gettype( $blog_id ) . ' given.' );
-  }
+  if ( ! is_int( $blog_id ) )
+    $blog_id = 0;
 
-  if ( ! is_array( $location ) ) {
-    throw new InvalidArgumentException( 'activate_location expects $location to be array, ' . gettype( $location ) . ' given.' );
-  }
-
-  $activated_locations = get_option( geoipsl_prefix_string( 'activated_locations' ) );
+  $activated_locations = get_option( geoipsl( 'activated_locations' ) );
 
   if ( ! is_array( $activated_locations ) ) {
     $activated_locations = array();
@@ -110,7 +250,7 @@ function geoipsl_activate_location( $blog_id, $location ) {
   if ( ! in_array( $blog_id, $activated_locations ) ) {
     $activated_locations[ $blog_id ] = $location;
 
-    update_option( geoipsl_prefix_string( 'activated_locations' ), $activated_locations );
+    update_option( geoipsl( 'activated_locations' ), $activated_locations );
 
     return $activated_locations;
   }
@@ -119,20 +259,22 @@ function geoipsl_activate_location( $blog_id, $location ) {
 }
 
 /**
-  * Deactivate a given GeoIP location.
-  *
-  * @since 0.1.0
-  *
-  * @param string $geolocation_id The string to be prefixed.
-  * @return bool|int Boolean FALSE if current user is not allowed to do this or interger number of active locations on success.
-  */
+ * Deactivate a given GeoIP location.
+ *
+ * @since 0.1.0
+ *
+ * @param string $geolocation_id The string to be prefixed.
+ * @return bool|int Boolean FALSE if current user is not allowed to do this or
+ * interger number of active locations on success.
+ */
 function geoipsl_deactivate_location( $blog_id ) {
 
   if ( ! is_int( $blog_id ) ) {
-    throw new InvalidArgumentException( 'deactivate_location expects $blog_id to be integer, ' . gettype( $blog_id ) . ' given.' );
+    throw new InvalidArgumentException( 'deactivate_location expects $blog_id
+       to be integer, ' . gettype( $blog_id ) . ' given.' );
   }
 
-  $activated_locations = get_option( geoipsl_prefix_string( 'activated_locations' ) );
+  $activated_locations = get_option( geoipsl( 'activated_locations' ) );
 
   if ( ! is_array( $activated_locations ) ) {
     $activated_locations = array();
@@ -141,102 +283,96 @@ function geoipsl_deactivate_location( $blog_id ) {
   // remove array in the list of active locations
   if ( array_key_exists( $blog_id, $activated_locations ) ) {
     unset ( $activated_locations[ $blog_id ] );
-    update_option( geoipsl_prefix_string( 'activated_locations' ), $activated_locations );
+    update_option( geoipsl( 'activated_locations' ), $activated_locations );
   }
 
-  return get_option( geoipsl_prefix_string( 'activated_locations' ) );
+  return get_option( geoipsl( 'activated_locations' ) );
 }
 
 /**
-  * Echoes the return value of wpautop
-  *
-  * @since 0.1.0
-  * @todo Remove this. Use sprintf() instead with <p> as parameter.
-  *
-  * @param string $string  The text to be formatted.
-  * @param bool $br  Preserve line breaks. When set to true, any line breaks
-  *        remaining after paragraph conversion are converted to HTML <br />.
-  *        Line breaks within script and style sections are not affected.
-  * @return void
-  */
+ * Echoes the return value of wpautop
+ *
+ * @since 0.1.0
+ * @todo Remove this. Use sprintf() instead with <p> as parameter.
+ *
+ * @param string $string  The text to be formatted.
+ * @param bool $br  Preserve line breaks. When set to true, any line breaks
+ *        remaining after paragraph conversion are converted to HTML <br />.
+ *        Line breaks within script and style sections are not affected.
+ * @return void
+ */
 function geoipsl_wpautop_e( $string, $br = true ) {
 
   echo wpautop( $string, $br );
 }
 
 /**
-  * Prefix a file name with the full path to our plugins data/ folder.
-  *
-  * @since 0.1.0
-  *
-  * @param string $geolocation_id The string to be prefixed.
-  * @throws InvalidArgumentException
-  * @return bool|string Boolean FALSE if our plugin dir cannot be found
-  */
-function geoipsl_get_file_path( $destination_file_name, $dir = 'data' ) {
-  if ( ! is_string( $destination_file_name ) ) {
-    throw new InvalidArgumentException( 'get_file_path expects $destination_file_name to be string, ' . gettype( $destination_file_name ) . ' given.' );
+ * Prefix a file name with the full path to our plugins data/ folder.
+ *
+ * @since 0.1.0
+ *
+ * @param string $geolocation_id The string to be prefixed.
+ * @throws InvalidArgumentException
+ * @return bool|string Boolean FALSE if our plugin dir cannot be found
+ */
+function geoipsl_get_file_path( $dest_file_name, $dir = 'data' ) {
+  if ( ! is_string( $dest_file_name ) ) {
+    throw new InvalidArgumentException( 'get_file_path expects
+       $dest_file_name to be string, '
+       . gettype( $dest_file_name ) . ' given.' );
   }
 
   if ( ! is_string( $dir ) ) {
-    throw new InvalidArgumentException( 'get_file_path expects $destination_file_name to be string, ' . gettype( $destination_file_name ) . ' given.' );
+    throw new InvalidArgumentException( 'get_file_path expects
+       $dest_file_name to be string, '
+       . gettype( $dest_file_name ) . ' given.' );
   }
 
-  if ( strpbrk( trim( $destination_file_name, '/' ), "\\/?%*:|\"<>") !== FALSE ) {
-    throw new InvalidArgumentException( 'get_file_path expects $destination_file_name to be a valid file name, ' . $destination_file_name . ' given.' );
+  if ( strpbrk( trim( $dest_file_name, '/' ), "\\/?%*:|\"<>") !== FALSE ) {
+    throw new InvalidArgumentException( 'get_file_path expects
+       $dest_file_name to be a valid file name, '
+       . $dest_file_name . ' given.' );
   }
 
   if ( strpbrk( trim( $dir, '/' ), "\?%*:|\"<>" ) !== FALSE ) {
-    throw new InvalidArgumentException( 'get_file_path expects $dir to be a valid directory name, ' . $dir . ' given.' );
+    throw new InvalidArgumentException( 'get_file_path expects $dir to be a
+       valid directory name, ' . $dir . ' given.' );
   }
 
-  return sprintf( "%s/%s/%s", rtrim( GEOIPSL_PLUGIN_DIR, '/' ), trim( $dir, '/' ), trim( $destination_file_name, '/' ) );
+  return sprintf( "%s/%s/%s", rtrim( GEOIPSL_PLUGIN_DIR, '/' ),
+    trim( $dir, '/' ), trim( $dest_file_name, '/' ) );
 }
 
 /**
-  * Download a dependency and put it in our plugin's data/ directory.
-  *
-  * @since 0.1.0
-  *
-  * @uses geoipsl_get_file_path()
-  * @param string $geolocation_id The string to be prefixed.
-  * @return string|bool|int string if a WP_Error is triggered
-  *                         FALSE if file path cannot be resolved,
-  *                         1 if unable to download source file
-  *                         2 if unable to move to target file
-  */
-function geoipsl_download_file( $destination_file_name, $source_file_url ) {
+ * Unzip given file an put it in the data/ directory.
+ *
+ * @since 0.3.0
+ *
+ * @param string $dest_file_name The destination file name (not file path),
+ *        relative to the data/ directory.
+ * @param string $source_file_name The source file name.
+ * @return string $destination_file_name
+ */
+function geoipsl_unzip_file( $dest_file_name, $source_file_name ) {
 
   // resolve destination file, return FALSE if unable to
-  $destination_file = geoipsl_get_file_path( $destination_file_name );
-  if ( ! $destination_file || ! $source_file_url ) {
+  $destination_file = geoipsl_get_file_path( $dest_file_name );
+  if ( ! $destination_file || ! $source_file_name ) {
     return FALSE;
   }
 
   // we need this to use the download_url function geoipsl_of Worldpress
   require_once( ABSPATH.'/wp-admin/includes/file.php');
 
-  // download the source file to a temporary location
-  $temporary_file = download_url( $source_file_url );
-
-  // check if WordPress throws an error when downloading the file
-  if ( is_wp_error( $temporary_file ) )
-    return $temporary_file->get_error_message();
-
-  // no errors, but does the file really exist and is accessible?
-  if ( ! file_exists( $temporary_file ) ) {
-    return 1;
-  }
-
-  $file_ext = pathinfo( $source_file_url );
+  $file_ext = pathinfo( $source_file_name );
   $file_ext = $file_ext['extension'];
 
   if ( 'gz' == $file_ext ) {
     // open a gzip file for reading
-    $input_file     = gzopen( $temporary_file, 'r' );
+    $input_file     = gzopen( $source_file_name, 'r' );
   } else {
     // open the source file for reading
-    $input_file     = fopen( $temporary_file, 'r' );
+    $input_file     = fopen( $source_file_name, 'r' );
   }
 
   // create the target file then open it for writing
@@ -256,39 +392,41 @@ function geoipsl_download_file( $destination_file_name, $source_file_url ) {
 
   if ( 'gz' == $file_ext ) {
     // close connections to temporary source file and target file
-    gzopen( $temporary_file );
+    gzclose( $input_file );
   } else {
     // close connections to temporary source file and target file
-    fclose( $temporary_file );
+    fclose( $input_file );
   }
 
   fclose( $output_file );
 
 
   // if we're unable to move anything to the new destination file
-  if ( ! $output_file || ! file_exists( $output_file ) )
+  if ( ! $destination_file || ! file_exists( $destination_file ) ) {
+    update_option( geoipsl( 'download_error' ), "Destination file not found." );
     return 2;
+  }
 
   // delete the temporary file
-  unlink( $temporary_file );
+  unlink( $source_file_name );
 
   // surely, success so return path to new file
   return $destination_file;
 }
 
 /**
-  * Get the date corresponding to a given day in the current week.
-  *
-  * For example, if today is Thursday, 11 September 2014, what would be date
-  * corrensponding to Monday of today's curent week?
-  *
-  * @since 0.1.0
-  *
-  * @param string $day Day of the week, or numeric equivalent where 1 is for Sunday to 7 for Saturday
-  * @param int $relative_to_date Date in Unix timestamp format for which to base our calculation
-  *                              If provided, this will be used instead of current time
-  * @return int Unix Time (seconds)
-  */
+ * Get the date corresponding to a given day in the current week.
+ *
+ * For example, if today is Thursday, 11 September 2014, what would be date
+ * corrensponding to Monday of today's curent week?
+ *
+ * @since 0.1.0
+ *
+ * @param string $day Day of the week, or numeric equivalent where 1 is for Sunday to 7 for Saturday
+ * @param int $relative_to_date Date in Unix timestamp format for which to base our calculation
+ *                              If provided, this will be used instead of current time
+ * @return int Unix Time (seconds)
+ */
 function geoipsl_get_date_of_day_on_week( $day = "Monday", $relative_to_date = '' ) {
   // Acceptable arguments --- visually match the index in actual calendars we use
   $days = array(
@@ -334,21 +472,21 @@ function geoipsl_get_date_of_day_on_week( $day = "Monday", $relative_to_date = '
 }
 
 /**
-  * Get the date of the next day of the week.
-  *
-  * For example, if today is Thursday, 11 September 2014, and we want to find out the date of next Friday
-  * this function geoipsl_will then return 12 September 2014 in Unix timestamp. However, if today is Saturday,
-  * 13 September 2014, then Friday this week has already passed so we return the "next" Friday which is
-  * 19 September 2014.
-  *
-  * @since 0.1.0
-  *
-  * @uses geoipsl_get_date_of_day_on_week()
-  * @param string $day Day of the week, or numeric equivalent where 1 is for Sunday to 7 for Saturday
-  * @param int $relative_to_date Date in Unix timestamp format for which to base our calculation
-  *                              If provided, this will be used instead of current time
-  * @return int Unix Time (seconds)
-  */
+ * Get the date of the next day of the week.
+ *
+ * For example, if today is Thursday, 11 September 2014, and we want to find out the date of next Friday
+ * this function geoipsl_will then return 12 September 2014 in Unix timestamp. However, if today is Saturday,
+ * 13 September 2014, then Friday this week has already passed so we return the "next" Friday which is
+ * 19 September 2014.
+ *
+ * @since 0.1.0
+ *
+ * @uses geoipsl_get_date_of_day_on_week()
+ * @param string $day Day of the week, or numeric equivalent where 1 is for Sunday to 7 for Saturday
+ * @param int $relative_to_date Date in Unix timestamp format for which to base our calculation
+ *                              If provided, this will be used instead of current time
+ * @return int Unix Time (seconds)
+ */
 function geoipsl_get_next_day_of_week( $day = "Monday", $relative_to_date = '' ) {
 
   $current_date = ( is_numeric( $relative_to_date ) && $relative_to_date > 0 ) ? $relative_to_date : time();
@@ -359,27 +497,27 @@ function geoipsl_get_next_day_of_week( $day = "Monday", $relative_to_date = '' )
 }
 
 /**
-  * Retieve all dates falling on all the weeks of a given calendar for a given year.
-  *
-  * For example, what are all the dates on the September 2014 calendar? This function geoipsl_will return
-  * a 0-indexed array of dates from August 31, 2014 to October 4, 2014. Visually:
-  *
-  * September 2014
-  * S   M   T   W   T   F   Sat
-  * 31  1   2   3   4   5   6
-  * 7   8   9   10  11  12  13
-  * 14  15  16  17  18  19  20
-  * 21  22  23  24  25  26  27
-  * 28  29  30  1   2   3   4
-  *
-  * @since 0.1.0
-  *
-  * @uses geoipsl_get_date_of_day_on_week()
-  * @param string $month Full or short month name, or numeric equivalent from 1 to 12
-  * @param int $year Four digit year, beginning from 1970
-  * @param string $return_format Value of 'use_time_stamp' returns array or UNIX timestamps, 'use_numeric_date' returns numeric date
-  * @return array Array of all dates falling on all the weeks of a given calendar for a given year
-  */
+ * Retieve all dates falling on all the weeks of a given calendar for a given year.
+ *
+ * For example, what are all the dates on the September 2014 calendar? This function geoipsl_will return
+ * a 0-indexed array of dates from August 31, 2014 to October 4, 2014. Visually:
+ *
+ * September 2014
+ * S   M   T   W   T   F   Sat
+ * 31  1   2   3   4   5   6
+ * 7   8   9   10  11  12  13
+ * 14  15  16  17  18  19  20
+ * 21  22  23  24  25  26  27
+ * 28  29  30  1   2   3   4
+ *
+ * @since 0.1.0
+ *
+ * @uses geoipsl_get_date_of_day_on_week()
+ * @param string $month Full or short month name, or numeric equivalent from 1 to 12
+ * @param int $year Four digit year, beginning from 1970
+ * @param string $return_format Value of 'use_time_stamp' returns array or UNIX timestamps, 'use_numeric_date' returns numeric date
+ * @return array Array of all dates falling on all the weeks of a given calendar for a given year
+ */
 function geoipsl_get_all_days( $month = "January", $year = 2014, $return_format = 'use_numeric_date' ) {
 
   $months = array(
@@ -496,29 +634,29 @@ function geoipsl_get_all_days( $month = "January", $year = 2014, $return_format 
 }
 
 /**
-  * Retieve all dates falling on all the weeks of a given calendar for a given year.
-  *
-  * For example, what are all the dates of all Wednesdays falling on the September 2014 calendar? This function geoipsl_will return
-  * a 0-indexed array of the dates of all Wednesdays from August 31, 2014 to October 4, 2014. Visually, it will return the
-  * bracketed list below (not include the "day" header):
-  *
-  * September 2014
-  * S   M   T   [ W  ]  T   F   Sat
-  * 31  1   2   [ 3  ]   4   5   6
-  * 7   8   9   [ 10 ]  11  12  13
-  * 14  15  16  [ 17 ]  18  19  20
-  * 21  22  23  [ 24 ]  25  26  27
-  * 28  29  30  [ 1  ]  2   3   4
-  *
-  * @since 0.1.0
-  *
-  * @uses geoipsl_get_date_of_day_on_week()
-  * @param string $day Full or short day name, or numeric equivalent from 1 to 7
-  * @param string $month Full or short month name, or numeric equivalent from 1 to 12
-  * @param int $year Four digit year, beginning from 1970
-  * @param string $return_format Value of 'use_time_stamp' returns array or UNIX timestamps, 'use_numeric_date' returns numeric date
-  * @return array Array of all dates falling on all the weeks of a given calendar for a given year
-  */
+ * Retieve all dates falling on all the weeks of a given calendar for a given year.
+ *
+ * For example, what are all the dates of all Wednesdays falling on the September 2014 calendar? This function geoipsl_will return
+ * a 0-indexed array of the dates of all Wednesdays from August 31, 2014 to October 4, 2014. Visually, it will return the
+ * bracketed list below (not include the "day" header):
+ *
+ * September 2014
+ * S   M   T   [ W  ]  T   F   Sat
+ * 31  1   2   [ 3  ]   4   5   6
+ * 7   8   9   [ 10 ]  11  12  13
+ * 14  15  16  [ 17 ]  18  19  20
+ * 21  22  23  [ 24 ]  25  26  27
+ * 28  29  30  [ 1  ]  2   3   4
+ *
+ * @since 0.1.0
+ *
+ * @uses geoipsl_get_date_of_day_on_week()
+ * @param string $day Full or short day name, or numeric equivalent from 1 to 7
+ * @param string $month Full or short month name, or numeric equivalent from 1 to 12
+ * @param int $year Four digit year, beginning from 1970
+ * @param string $return_format Value of 'use_time_stamp' returns array or UNIX timestamps, 'use_numeric_date' returns numeric date
+ * @return array Array of all dates falling on all the weeks of a given calendar for a given year
+ */
 function geoipsl_get_these_days( $day = "Monday", $month = "January", $year = 2014, $return_format = 'use_numeric_date' ) {
 
   $days = array(
@@ -567,29 +705,29 @@ function geoipsl_get_these_days( $day = "Monday", $month = "January", $year = 20
 }
 
 /**
-  * Retrieve the date falling falling on a particular day of the week of the Nth week of a given month on a given year.
-  *
-  * For example, what date corresponds to the Wednesday of the second week of September 2014? Visually, it will return the
-  * intersection of the bracketed lists below:
-  *
-  *   September 2014
-  *   S     M     T   [ W  ]   T      F      Sat
-  *   31    1     2   [ 3  ]   4      5      6
-  * [ 7 ] [ 8 ] [ 9 ] [ 10 ] [ 11 ] [ 12 ] [ 13 ]
-  *   14    15    16  [ 17 ]   18     19     20
-  *   21    22    23  [ 24 ]   25     26     27
-  *   28    29    30  [ 1  ]   2      3      4
-  *
-  * @since 0.1.0
-  *
-  * @uses geoipsl_get_date_of_day_on_week()
-  * @param string $day Full or short day name, or numeric equivalent from 1 to 7
-  * @param string $week Week number, from 1 to 5
-  * @param string $month Full or short month name, or numeric equivalent from 1 to 12
-  * @param int $year Four digit year, beginning from 1970
-  * @param string $return_format Value of 'use_time_stamp' returns array or UNIX timestamps, 'use_numeric_date' returns numeric date
-  * @return array Array of all dates falling on all the weeks of a given calendar for a given year
-  */
+ * Retrieve the date falling falling on a particular day of the week of the Nth week of a given month on a given year.
+ *
+ * For example, what date corresponds to the Wednesday of the second week of September 2014? Visually, it will return the
+ * intersection of the bracketed lists below:
+ *
+ *   September 2014
+ *   S     M     T   [ W  ]   T      F      Sat
+ *   31    1     2   [ 3  ]   4      5      6
+ * [ 7 ] [ 8 ] [ 9 ] [ 10 ] [ 11 ] [ 12 ] [ 13 ]
+ *   14    15    16  [ 17 ]   18     19     20
+ *   21    22    23  [ 24 ]   25     26     27
+ *   28    29    30  [ 1  ]   2      3      4
+ *
+ * @since 0.1.0
+ *
+ * @uses geoipsl_get_date_of_day_on_week()
+ * @param string $day Full or short day name, or numeric equivalent from 1 to 7
+ * @param string $week Week number, from 1 to 5
+ * @param string $month Full or short month name, or numeric equivalent from 1 to 12
+ * @param int $year Four digit year, beginning from 1970
+ * @param string $return_format Value of 'use_time_stamp' returns array or UNIX timestamps, 'use_numeric_date' returns numeric date
+ * @return array Array of all dates falling on all the weeks of a given calendar for a given year
+ */
 function geoipsl_get_date_of_day_on_month( $day = "Monday", $week = 1, $month = "January", $year = 2014, $return_format = 'use_numeric_date' ) {
   $weeks = array(
     'week1' => 1,
@@ -726,4 +864,3 @@ function geoipsl_request_or_saved_value( $key, $default = '', $blacklist = NULL,
 
   return ( $request ) ? $request : $geoipsl_settings->get( $key );
 }
-
