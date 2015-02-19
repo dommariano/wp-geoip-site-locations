@@ -50,6 +50,7 @@ module.exports = (grunt) ->
             expand: true
             src: [
               "vendor/**/*.php"
+              "vendor/**/src/**"
               "!vendor/**/test/**"
               "!vendor/**/doc/**"
               "!vendor/**/example/**"

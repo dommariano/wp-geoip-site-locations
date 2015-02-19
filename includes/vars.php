@@ -18,8 +18,6 @@ if ( file_exists( $geoipsl_db_file_to_use ) ) {
 	$geoipsl_reader->set_geoip_db_reader( $reader );
 }
 
-$geoipsl_reader->set_to_use_geoip_db();
-
 // if fully available let's use the web service
 if ( $geoipsl_settings->get( 'geoip_web_service' ) &&
 		 $geoipsl_settings->get( 'maxmind_user_id' ) &&

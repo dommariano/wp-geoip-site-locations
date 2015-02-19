@@ -17,7 +17,14 @@ if ( in_array( $ip, array( '', GEOIPSL_RESERVED_IP, GEOIPSL_INVALID_IP ) ) || ! 
 }
 
 if ( '' == $tracking_info ) {
+
   $result   = $geoipsl_reader->query_city( $ip );
+
+  if ( empty( $result ) ) {
+    wp_redirect( add_query_arg( array( 'welcome' => 'home' ), get_home_url() ) );
+    exit;
+  }
+
   $lat      = $result->location->latitude;
   $long     = $result->location->longitude;
   $blog_ids = GeoIPSL\Distance::get_closest_site( $lat, $long, 1000 * floatval( $geoipsl_settings->get( 'distance_limit' ) ) );

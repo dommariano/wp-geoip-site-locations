@@ -41,6 +41,10 @@ class Reader implements Reader_Interface {
 
 	public function query_city( $ip ) {
 		if ( $this->_is_using_local ) {
+			if ( ! is_a( $this->_local_reader, 'GeoIp2\Database\Reader' ) ) {
+			    return 0;
+			}
+
 			return $this->_local_reader->city( $ip );
 		}
 
@@ -49,6 +53,9 @@ class Reader implements Reader_Interface {
 
 	public function query_country( $ip ) {
 		if ( $this->_is_using_local ) {
+			if ( ! is_a( $this->_local_reader, 'GeoIp2\Database\Reader' ) ) {
+			    return 0;
+			}
 			return $this->_local_reader->country( $ip );
 		}
 
@@ -57,6 +64,9 @@ class Reader implements Reader_Interface {
 
 	public function query_insights( $ip ) {
 		if ( ! $this->_is_using_local ) {
+			if ( ! is_a( $this->_local_reader, 'GeoIp2\WebService\Client' ) ) {
+			    return 0;
+			}
 			return $this->_remote_reader->insights( $ip );
 		}
 	}
