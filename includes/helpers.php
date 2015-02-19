@@ -50,8 +50,7 @@ function geoipsl_get_active_loc_count() {
 function geoipsl_get_remaining_queries( $web_service ) {
   global $geoipsl_settings, $geoipsl_admin_settings;
 
-  if ( ! is_int( $web_service ) )
-    return 0;
+  $web_service = intval( $web_service );
 
   switch ( $web_service ) {
     case 1: // country
