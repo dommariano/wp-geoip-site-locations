@@ -1,0 +1,16 @@
+.geoipsl-upload-help {
+	color: #999;
+	font-size: 18px;
+	font-style: normal;
+	margin: 0;
+	padding: 40px 0 0;
+	text-align: center;
+}
+
+.geoipsl-upload-db .wp-upload-form {
+	background: #fafafa;
+	border: 1px solid #e5e5e5;
+	padding: 30px;
+	margin: 30px auto;
+	max-width: 380px;
+}

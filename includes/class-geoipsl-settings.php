@@ -26,11 +26,11 @@ if ( ! function_exists( 'add_action' ) && ! function_exists( 'add_filter' ) ) {
   */
 
 class Settings implements Settings_Interface {
-	private $settings;
+  private $settings;
 
-	public function __construct( array $settings ) {
-		$this->settings = $settings;
-	}
+  public function __construct( array $settings ) {
+    $this->settings = $settings;
+  }
 
   public function get( $unprefixed_option_name ) {
     if ( ! is_string( $unprefixed_option_name ) ) {
@@ -45,10 +45,10 @@ class Settings implements Settings_Interface {
       throw new InvalidArgumentException( 'set expects $unprefixed_option_name to be string, ' . gettype( $unprefixed_option_name ) . ' given.' );
     }
 
-    update_option( geoipsl_prefix_string( $unprefixed_option_name ), $option_value );
+    update_option( geoipsl( $unprefixed_option_name ), $option_value );
 
     $this->settings[ $unprefixed_option_name ] = $option_value;
 
-    update_option( geoipsl_prefix_string( 'site_group_head_settings' ), $this->settings );
+    update_option( geoipsl( 'site_group_head_settings' ), $this->settings );
   }
 }

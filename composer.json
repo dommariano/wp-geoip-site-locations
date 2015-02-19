@@ -1,7 +1,7 @@
 {
     "require": {
-    	"egeloen/google-map": "dev-master",
-    	"mobiledetect/mobiledetectlib": "2.8.5",
+        "egeloen/google-map": "dev-master",
+        "mobiledetect/mobiledetectlib": "2.8.5",
         "geoip2/geoip2": "~0.9.0",
         "willdurand/geocoder": "2.8.0",
         "kriswallsmith/Buzz": "0.13"

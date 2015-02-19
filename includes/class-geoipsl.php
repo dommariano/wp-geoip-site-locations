@@ -30,13 +30,13 @@ class Site_Locations {
   public static function init() {
 
     // ALWAYS make sure the plugin version is up-to-date.
-    update_option( geoipsl_prefix_string( 'plugin_version' ), GEOIPSL_PLUGIN_VERSION );
+    update_option( geoipsl( 'plugin_version' ), GEOIPSL_PLUGIN_VERSION );
 
     // DO NOT automatically update the database version. We need the old value for incremental database updates.
-    add_option( geoipsl_prefix_string( 'database_version' ), GEOIPSL_DATABASE_VERSION );
+    add_option( geoipsl( 'database_version' ), GEOIPSL_DATABASE_VERSION );
 
     // Every NONEMPTY setting that exists about this plugin.
-    add_option( geoipsl_prefix_string( 'settings' ), array() );
+    add_option( geoipsl( 'settings' ), array() );
 
     add_action( 'template_redirect',                              array( __CLASS__, 'redirect_to_geoip_subsite'        ) );
     add_action( 'wp_ajax_ajax_redirect_to_geoip_subsite',         array( __CLASS__, 'ajax_redirect_to_geoip_subsite'   ) );
@@ -84,28 +84,28 @@ class Site_Locations {
   }
 
   /**
-    * When plugin is deleted from admin, ask the user if
-    * they want to delete the database tables and other data as well.
-    *
-    * @since 0.1.0
-    *
-    * @param none
-    * @return void
-    */
+   * When plugin is deleted from admin, ask the user if
+   * they want to delete the database tables and other data as well.
+   *
+   * @since 0.1.0
+   *
+   * @param none
+   * @return void
+   */
   public static function maybe_uninstall() {
   }
 
   /**
-    * Install fresh database tables on first install or update the database if this is a
-    * update for the plugin.
-    *
-    * @since 0.1.0
-    *
-    * @param none
-    * @return void
-    */
+   * Install fresh database tables on first install or update the database if this is a
+   * update for the plugin.
+   *
+   * @since 0.1.0
+   *
+   * @param none
+   * @return void
+   */
   public static function maybe_update() {
-    $dbversion = get_option( geoipsl_prefix_string( 'database_version' ) );
+    $dbversion = get_option( geoipsl( 'database_version' ) );
 
     $dbversion = abs( $dbversion );
 
@@ -120,13 +120,13 @@ class Site_Locations {
   }
 
   /**
-    * Redirect to appropriate GeoIP subsite.
-    *
-    * @since 0.1.0
-    *
-    * @param none
-    * @return void
-    */
+   * Redirect to appropriate GeoIP subsite.
+   *
+   * @since 0.1.0
+   *
+   * @param none
+   * @return void
+   */
   public static function redirect_to_geoip_subsite() {
 
     global $geoipsl_settings;
@@ -156,13 +156,13 @@ class Site_Locations {
   }
 
   /**
-    * Load our front-end assets for geolocation using the MaxMind JavaScript API.
-    *
-    * @since 0.1.0
-    *
-    * @param none
-    * @return void
-    */
+   * Load our front-end assets for geolocation using the MaxMind JavaScript API.
+   *
+   * @since 0.1.0
+   *
+   * @param none
+   * @return void
+   */
   public static function load_maxmind_js_app() {
     global $geoipsl_settings;
 
@@ -217,13 +217,13 @@ class Site_Locations {
   }
 
   /**
-    * AJAX callback function for determining which site to serve.
-    *
-    * @since 0.1.0
-    *
-    * @param none
-    * @return void
-    */
+   * AJAX callback function for determining which site to serve.
+   *
+   * @since 0.1.0
+   *
+   * @param none
+   * @return void
+   */
   public static function ajax_redirect_to_geoip_subsite() {
     global $geoipsl_settings;
 
@@ -267,13 +267,13 @@ class Site_Locations {
   }
 
   /**
-    * Redirect users who are using desktop devices.
-    *
-    * @since 0.1.0
-    *
-    * @param none
-    * @return void
-    */
+   * Redirect users who are using desktop devices.
+   *
+   * @since 0.1.0
+   *
+   * @param none
+   * @return void
+   */
   public static function redirect_to_geoip_desktop_subsite( ) {
 
     global $geoipsl_settings;
@@ -296,17 +296,17 @@ class Site_Locations {
   }
 
   /**
-    * Whether we are on selected entry point on the root site or
-    * whether we are on the root site or not.
-    *
-    * The entry point will typically be the home or front page of the
-    * root site. We have this function for a future feature where we can specify
-    * some other entry point aside from the home or front page.
-    *
-    * @since 0.1.0
-    *
-    * @param int $blog_id
-    */
+   * Whether we are on selected entry point on the root site or
+   * whether we are on the root site or not.
+   *
+   * The entry point will typically be the home or front page of the
+   * root site. We have this function for a future feature where we can specify
+   * some other entry point aside from the home or front page.
+   *
+   * @since 0.1.0
+   *
+   * @param int $blog_id
+   */
   public static function is_on_site_entry_point( $blog_id ) {
 
     global $geoipsl_settings;

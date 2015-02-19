@@ -6,7 +6,7 @@
   <?php
     $headers = array(
       'check'                   =>    '&nbsp;',
-      'web_servide'             => __( 'Service', 'geoipsl'),
+      'web_service'             => __( 'Service', 'geoipsl'),
       'used_for'                => __( 'Detects', 'geoipsl'),
       'queries'                 => __( 'Queries', 'geoipsl'),
       'queries_left'            => __( 'Queries Left', 'geoipsl'),
@@ -15,24 +15,24 @@
     $rows = array(
       array(
         'check'                 => '<input type="radio" name="geoip_web_service" group="geoip_web_service" value="1">', //geoip-database
-        'web_servide'           => sprintf( __( 'GeoIP2 Precision Country', 'geoipsl' ), '<b style="color: #d46f15;">', '</b>' ),
+        'web_service'           => sprintf( __( 'GeoIP2 Precision Country', 'geoipsl' ), '<b style="color: #d46f15;">', '</b>' ),
         'used_for'              => wpautop( __( 'country', 'geoipsl' ) ),
-        'queries'               => 250000,
-        'queries_left'          => 250000,
+        'queries'               => $geoipsl_settings->get( 'country_queries' ),
+        'queries_left'          => $geoipsl_settings->get( 'country_queries_left' ),
       ),
       array(
         'check'                 => '<input type="radio" name="geoip_web_service" group="geoip_web_service" value="2">', //geoip-database
-        'web_servide'           => sprintf( __( 'GeoIP2 Precision City', 'geoipsl' ), '<b style="color: #d46f15;">', '</b>' ),
+        'web_service'           => sprintf( __( 'GeoIP2 Precision City', 'geoipsl' ), '<b style="color: #d46f15;">', '</b>' ),
         'used_for'              => wpautop( __( 'country, subdivisions, city, postal code, latitude, longitude', 'geoipsl' ) ),
-        'queries'               => 250000,
-        'queries_left'          => 250000,
+        'queries'               => $geoipsl_settings->get( 'city_queries' ),
+        'queries_left'          => $geoipsl_settings->get( 'city_queries_left' ),
       ),
       array(
         'check'                 => '<input type="radio" name="geoip_web_service" group="geoip_web_service" value="3">', //geoip-database
-        'web_servide'           => sprintf( __( 'GeoIP2 Precision Insights', 'geoipsl' ), '<b style="color: #d46f15;">', '</b>' ),
+        'web_service'           => sprintf( __( 'GeoIP2 Precision Insights', 'geoipsl' ), '<b style="color: #d46f15;">', '</b>' ),
         'used_for'              => wpautop( __( 'country, subdivisions, city, postal code, latitude, longitude, accuracy radius', 'geoipsl' ) ),
-        'queries'               => 250000,
-        'queries_left'          => 250000,
+        'queries'               => $geoipsl_settings->get( 'insights_queries' ),
+        'queries_left'          => $geoipsl_settings->get( 'insights_queries_left' ),
       ),
     );
 

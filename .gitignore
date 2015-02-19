@@ -2,4 +2,7 @@ data/*
 vendor/
 composer.phar
 composer.lock
+node_modules/
+npm-debug.log
+build/
 .DS_Store
