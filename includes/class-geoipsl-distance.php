@@ -1,16 +1,18 @@
 <?php namespace GeoIPSL;
 
 if ( ! function_exists( 'add_action' ) && ! function_exists( 'add_filter' ) ) {
-    echo "Hi there!  I'm just a plugin, not much I can do when called directly.";
-    exit;
+  echo "Hi there!  I'm just a plugin, not much I can do when called directly.";
+  exit;
 }
 
 class Distance {
   /**
     *
-    * Calculate the great circle distance between a two coordinates on the surface of a sphere the size of Earth.
+    * Calculate the great circle distance between a two coordinates on the
+    * surface of a sphere the size of Earth.
     *
-    * This works for small distances. At long lines however, it is better to use Vicenty's formula.
+    * This works for small distances. At long lines however, it is better to
+    * use Vicenty's formula.
     *
     * @since 0.1.0
     * @see http://en.wikipedia.org/wiki/Haversine_formula
@@ -25,10 +27,10 @@ class Distance {
   public static function great_circle_distance( $latitude1, $longitude1, $latitude2, $longitude2 ) {
     $R = 6378.137; // Equatorial radius of the Earth
 
-    $latitude1              = deg2rad( $latitude1   );
-    $longitude1             = deg2rad( $longitude1  );
-    $latitude2              = deg2rad( $latitude2   );
-    $longitude2             = deg2rad( $longitude2  );
+    $latitude1              = deg2rad( $latitude1 );
+    $longitude1             = deg2rad( $longitude1 );
+    $latitude2              = deg2rad( $latitude2 );
+    $longitude2             = deg2rad( $longitude2 );
     $haversine_lats         = pow( ( sin( $latitude1 - $latitude2 ) / 2 ), 2 );
     $haversine_longs        = pow( ( sin( $longitude1 - $longitude2 ) / 2 ), 2 );
     $haversine              = ( $haversine_lats + ( cos( $latitude1 ) * cos( $latitude2 ) * $haversine_longs ) );
@@ -43,45 +45,34 @@ class Distance {
 
   /**
     *
-    * Calculate the geodesic ( in meters ) between two coordinates on the surface of a spheroid the size of Earth using Vicenty's formula.
+    * Calculate the geodesic ( in meters ) between two coordinates on the
+    * surface of a spheroid the size of Earth using Vicenty's formula.
     *
-    * This function is a PHP implementation of the reverse geodesic problem @see http://en.wikipedia.org/wiki/Vincenty%27s_formulae.
-    * At nearly antipodal points, this algorithm will iterate more than 1000 times to converge. At actual antipodal points, however,
+    * This function is a PHP implementation of the reverse geodesic problem
+    * @see http://en.wikipedia.org/wiki/Vincenty%27s_formulae.
+    * At nearly antipodal points, this algorithm will iterate more than 1000
+    * times to converge. At actual antipodal points, however,
     * we fail to converge at all.
     *
     * @since 0.1.0
     * @see http://geographiclib.sourceforge.net/geod-addenda.html
-    * @todo Implement faster Newtons Method as described by Karney here
-    *       http://download.springer.com/static/pdf/937/art%253A10.1007%252Fs00190-012-0578-z.pdf?auth66=1410111460_5ebd7e238dacab05e2b8d4a74abe3ac6&ext=.pdf
+    * @todo Implement faster Newtons Method as described by Karney.
+    *
     * @param float $latitude1 The latitude of the first coordinate.
     * @param float $longitude1 The longitude of the first coordinate.
     * @param float $latitude2 The latitude of the second coordinate.
     * @param float $longitude2 The longitude of the second coordinate.
-    * @return float|int The geodesic between the two coordinates given. Int -1 when we have antipodal points. Int -2 when the algorithm fails to converge.
+    * @return float | int The geodesic between the two coordinates given.
+    * Int -1 when we have antipodal points. Int -2 when the algorithm fails to
+    * converge.
     */
   public static function geodesic( $latitude1, $longitude1, $latitude2, $longitude2 ) {
 
-    if ( ! is_float( $latitude1 ) ) {
-      throw new \InvalidArgumentException( 'geodesic expects $latitude1 to be float, ' . gettype( $latitude1 ) . ' given.' );
-    }
-
-    if ( ! is_float( $longitude1 ) ) {
-      throw new \InvalidArgumentException( 'geodesic expects $longitude1 to be float, ' . gettype( $longitude1 ) . ' given.' );
-    }
-
-    if ( ! is_float( $latitude2 ) ) {
-      throw new \InvalidArgumentException( 'geodesic expects $latitude2 to be float, ' . gettype( $latitude2 ) . ' given.' );
-    }
-
-    if ( ! is_float( $longitude2 ) ) {
-      throw new \InvalidArgumentException( 'geodesic expects $longitude2 to be float, ' . gettype( $longitude2 ) . ' given.' );
-    }
-
     // Convert all inputs to radians.
-    $latitude1              = deg2rad( $latitude1   );
-    $longitude1             = deg2rad( $longitude1  );
-    $latitude2              = deg2rad( $latitude2   );
-    $longitude2             = deg2rad( $longitude2  );
+    $latitude1              = deg2rad( floatval( $latitude1  ) );
+    $longitude1             = deg2rad( floatval( $longitude1 ) );
+    $latitude2              = deg2rad( floatval( $latitude2  ) );
+    $longitude2             = deg2rad( floatval( $longitude2 ) );
 
     $a        = 6378137.0;                                  // length of semi-major axis of the ellipsoid (radius at equator)
     $f        = 1/298.257223563;                            // flattening of the ellipsoid
@@ -139,24 +130,6 @@ class Distance {
   }
 
   /**
-    *
-    * Calculate travel ( walking, driving, bicycling ) distance and time between the two coordinates given according to Google.
-    *
-    * @since 0.1.0
-    *
-    * @param float $latitude1 The latitude of the first coordinate
-    * @param float $longitude1 The longitude of the first coordinate
-    * @param float $latitude2 The latitude of the second coordinate
-    * @param float $longitude2 The longitude of the second coordinate
-    * @param string $mode The method of traveling used to modify distance calculations
-    * @param string $api_key The Google API key to use if we have a premium account.
-    * @return array|bool $travel_distance The travel (walking, driving, bicycling) distance and time
-    *         between the two coordinates given according to Google. Boolean false if an error is returned by Google.
-    */
-  public static function travel_distance( $latitude1, $longitude1, $latitude2, $longitude2, $mode = 'walking', $api_key = '' ) {
-  }
-
-  /**
     * Determine the site closest to the retrieved IP,
     * given the coordinate supplied for the subsite.
     *
@@ -168,18 +141,8 @@ class Distance {
     */
   public static function get_closest_site( $lat_from, $long_from, $limit = 100000 ) {
 
-    if ( ! is_float( $lat_from ) ) {
-      throw new InvalidArgumentException( 'get_closest_site expects $lat_from to be float, ' . gettype( $lat_from ) . ' given.' );
-    }
-
-    if ( ! is_float( $long_from ) ) {
-      throw new InvalidArgumentException( 'get_closest_site expects $lat_from to be float, ' . gettype( $long_from ) . ' given.' );
-    }
-
-
-    if ( ! is_numeric( $limit ) ) {
-      throw new InvalidArgumentException( 'get_closest_site expects $limit to be integer, ' . gettype( $limit ) . ' given.' );
-    }
+    $lat_from = floatval( $lat_from );
+    $long_from = floatval( $long_from );
 
     $site_locations = get_option( geoipsl( 'activated_locations' ), array() );
     $site_distances = array();

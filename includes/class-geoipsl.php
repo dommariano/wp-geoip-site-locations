@@ -6,54 +6,65 @@ if ( ! function_exists( 'add_action' ) && ! function_exists( 'add_filter' ) ) {
 }
 
 /**
-  * Main plugin class.
-  *
-  * This class handles redirects. Users coming from desktops
-  * will be redirected based on their IP address using the MaxMind GeoIP database or premium
-  * web service. Visitors coming from mobile devices the support HTML5 Geolocaiton API will
-  * be redirected using that APi. Visitors coming mobile devices without the HTML5 Geolocation
-  * will not be redirected, but instead will be given the option to select the site location
-  * they wish to be redirected to ( requires theme integration ).
-  *
-  * @since 0.1.0
-  */
+ * Main plugin class.
+ *
+ * This class handles redirects. Users coming from desktops will be redirected
+ * based on their IP address using the MaxMind GeoIP database or premium web
+ * service. Visitors coming from mobile devices the support HTML5 Geolocaiton
+ * API will be redirected using that APi. Visitors coming mobile devices
+ * without the HTML5 Geolocation will not be redirected, but instead will be
+ * given the option to select the site location they wish to be redirected to
+ * ( requires theme integration ).
+ *
+ * @since 0.1.0
+ */
 class Site_Locations {
 
   /**
-    * Initialise the program after everything is ready.
-    *
-    * @since 0.1.0
-    *
-    * @param none
-    * @return void
-    */
+   * Initialise the program after everything is ready.
+   *
+   * @since 0.1.0
+   *
+   * @param none
+   * @return void
+   */
   public static function init() {
 
-    // ALWAYS make sure the plugin version is up-to-date.
+    /**
+     * ALWAYS make sure the plugin version is up-to-date.
+     */
     update_option( geoipsl( 'plugin_version' ), GEOIPSL_PLUGIN_VERSION );
 
-    // DO NOT automatically update the database version. We need the old value for incremental database updates.
+    /**
+     * DO NOT automatically update the database version. We need the old value
+     * for incremental database updates.
+     */
     add_option( geoipsl( 'database_version' ), GEOIPSL_DATABASE_VERSION );
 
-    // Every NONEMPTY setting that exists about this plugin.
+    /**
+     * Every NONEMPTY setting that exists about this plugin.
+     */
     add_option( geoipsl( 'settings' ), array() );
 
     add_action( 'template_redirect',                              array( __CLASS__, 'redirect_to_geoip_subsite'        ) );
     add_action( 'wp_ajax_ajax_redirect_to_geoip_subsite',         array( __CLASS__, 'ajax_redirect_to_geoip_subsite'   ) );
     add_action( 'wp_ajax_nopriv_ajax_redirect_to_geoip_subsite',  array( __CLASS__, 'ajax_redirect_to_geoip_subsite'   ) );
 
-    ob_start(); // To allow for redirection.
+    /**
+     * Hack to allow for redirection.
+     */
+    ob_start();
   }
 
   /**
-    * Checks program environment to see if all dependencies are available. If at least one
-    * dependency is absent, deactivate the plugin.
-    *
-    * @since 0.1.0
-    *
-    * @param none
-    * @return void
-    */
+   * Checks program environment to see if all dependencies are available. If at least one
+   * dependency is absent, deactivate the plugin.
+   *
+   * @since 0.1.0
+   *
+   * @param none
+   * @return void
+   */
   public static function maybe_deactivate() {
 
     global $wp_version;
@@ -132,7 +143,15 @@ class Site_Locations {
     global $geoipsl_settings;
     global $mobile_detect;
 
-    // only redirect if we are on the root site
+    /**
+     * Load the client side cookie and tracking management system regardless
+     * of whether we are on the root site or subsite.
+     */
+    add_action( 'wp_enqueue_scripts', array( __CLASS__ , 'load_cookie_js' ) );
+
+    /**
+     * Only redirect if we are on the root site.
+     */
     if ( self::is_on_site_entry_point( get_current_blog_id() ) ) {
 
       if ( is_user_logged_in() && GEOIPSL_ON_STATUS == $geoipsl_settings->get( 'geoip_test_status' ) ) {
@@ -148,8 +167,6 @@ class Site_Locations {
           self::redirect_to_geoip_desktop_subsite();
         }
       }
-    } else {
-      Cookies::set_location_cookie( get_current_blog_id(), 30, time() );
     }
 
     return 2;
@@ -205,7 +222,6 @@ class Site_Locations {
     wp_localize_script( 'geoipslapp', 'geoipslapp', array(
       'ajaxurl' => admin_url( 'admin-ajax.php' ),
       'triggerElement' => $geoipsl_settings->get( 'lightbox_trigger_element' ),
-      'enableHighAccuracy' => (bool) $geoipsl_settings->get( 'mobile_high_accuracy_status' ),
     ) );
 
     if ( ! wp_script_is('jquery', 'enqueued') ) {
@@ -216,13 +232,32 @@ class Site_Locations {
     wp_enqueue_script( 'geoipslapp');
   }
 
+  public static function load_cookie_js() {
+    global $geoipsl_settings;
+
+    $site_id = get_current_site();
+    $site_id = $site_id->id;
+    $blog_id = get_current_blog_id();
+
+    if ( $site_id != $blog_id ) {
+      return 1;
+    }
+
+    wp_register_script( 'geoipsl-cookie', trailingslashit( plugin_dir_url( __FILE__ ) ) . 'js/geoipsl-cookie.js', array( 'jquery' ), NULL );
+    wp_localize_script( 'geoipsl-cookie', 'geoipsltracker', array(
+      'siteid' => $site_id,
+      'blogid' => $blog_id,
+      'rememberLastBlogId' => true,
+    ) );
+    wp_enqueue_script( 'geoipsl-cookie' );
+  }
+
   /**
    * AJAX callback function for determining which site to serve.
    *
    * @since 0.1.0
    *
-   * @param none
-   * @return void
+   * @param none * @return void
    */
   public static function ajax_redirect_to_geoip_subsite() {
     global $geoipsl_settings;
@@ -313,7 +348,7 @@ class Site_Locations {
     global $post;
 
     if ( ! is_int( $blog_id ) ) {
-      throw new \InvalidArgumentException( 'is_on_site_entry_point expects $blog_id to be integer, ' . gettype( $blog_id ) . ' given.' );
+      return FALSE;
     }
 
     if ( ! $geoipsl_settings->get( 'site_entry_page' ) ) {
