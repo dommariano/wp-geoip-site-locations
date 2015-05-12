@@ -87,3 +87,4 @@ class Cookies {
 
     setcookie( 'wp_geoipsl', $wp_geoipsl, 0, '/', sprintf( ".%s", $domain ) );
   }
+}

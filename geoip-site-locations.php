@@ -54,9 +54,10 @@ define( 'GEOIPSL_RESERVED_IP', -2 );
 define( 'GEOIPSL_INVALID_TEST_DATABASE_OR_SERVICE', -1 );
 define( 'GEOIPSL_INVALID_TEST_COORDINATE', 'invalid_coordinate' );
 define( 'GEOIPSL_MAYBE_PROXY', 'maybe_proxy' );
+define( 'GEOIPSL_CRON_JOBS', 1 );
 
-require_once( GEOIPSL_PLUGIN_DIR . 'vendor/autoload.php');
-require_once( GEOIPSL_PLUGIN_DIR . 'includes/shortcodes.php');
+require_once( GEOIPSL_PLUGIN_DIR . 'vendor/autoload.php' );
+require_once( GEOIPSL_PLUGIN_DIR . 'includes/shortcodes.php' );
 
 register_activation_hook(   __FILE__, array( 'GeoIPSL\Site_Locations', 'maybe_deactivate' ) );
 register_activation_hook(   __FILE__, array( 'GeoIPSL\Site_Locations', 'maybe_update'     ) );

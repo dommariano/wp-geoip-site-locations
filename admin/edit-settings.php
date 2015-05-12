@@ -428,11 +428,11 @@ if ( $do_action ) {
       ) );
       $remove_args[] = 'use_geoip_detection';
 
-      $option_value = geoipsl_request_value( 'remember_last_served_site', GEOIPSL_OFF_STATUS );
-      $geoipsl_settings->set( 'remember_last_served_site', (string) $option_value, 'string', array(
+      $option_value = geoipsl_request_value( 'geoipsl_cache_settings', GEOIPSL_OFF_STATUS );
+      $geoipsl_settings->set( 'geoipsl_cache_settings', (string) $option_value, 'string', array(
         'range' => array( 'on', 'off' ),
       ) );
-      $remove_args[] = 'remember_last_served_site';
+      $remove_args[] = 'geoipsl_cache_settings';
 
       $option_value = geoipsl_request_value( 'lightbox_trigger_element' );
       $geoipsl_settings->set( 'lightbox_trigger_element', (string) $option_value );
