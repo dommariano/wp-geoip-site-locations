@@ -24,6 +24,7 @@ module.exports = (grunt) ->
       compile:
         files:
           'includes/js/geoipsl-cookie.js' : 'coffee/cookie.coffee'
+          'includes/js/geoipsl-nearest-site.js' : 'coffee/nearest-site.coffee'
 
     watch:
       scripts:

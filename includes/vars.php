@@ -5,6 +5,11 @@
  * @package GeoIPSL
  */
 
+$current_site = get_current_site();
+$current_site = $current_site->id;
+
+switch_to_blog( $current_site );
+
 global $post, $geoipsl_reader, $geoipsl_settings, $geoipsl_admin_settings, $mobile_detect;
 
 // setup our plugin
@@ -51,3 +56,5 @@ $mobile_detect = new Mobile_Detect();
 if ( is_admin() ) {
   $geoipsl_admin_settings = new GeoIPSL\Settings_Admin( $geoipsl_settings );
 }
+
+restore_current_blog();

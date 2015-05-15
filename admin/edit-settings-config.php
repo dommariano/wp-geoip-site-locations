@@ -79,7 +79,7 @@
 <legend class="screen-reader-text"><span><?php _e( 'Distance logic', 'geoipsl' ); ?></span></legend>
 <label for="distance_limit">
 <?php _e( 'Serve nearest site within', 'geoipsl' ); ?>
-<input name="distance_limit" type="number" id="distance_limit" value="<?php echo esc_attr( $geoipsl_admin_settings->get( 'distance_limit' ) ); ?>" min="1" max="1000">
+<input name="distance_limit" type="number" id="distance_limit" value="<?php echo esc_attr( $geoipsl_admin_settings->get( 'distance_limit' ) ); ?>" min="1" max="10000">
 <?php _e( 'kilometer(s) of visitor location.', 'geoipsl' ); ?>
 </label>
 <br>

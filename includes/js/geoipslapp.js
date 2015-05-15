@@ -2,8 +2,8 @@ jQuery( document ).ready( function() {
   ( function( $ ) {
 
     geoipsl_triggerSwitcher = function() {
-      if ( geoipslapp.triggerElement ) {
-        $switcher = $( geoipslapp.triggerElement );
+      if ( geoipsltracker.triggerElement ) {
+        $switcher = $( geoipsltracker.triggerElement );
 
         if ( $switcher.length ) {
           $switcher = $switcher.eq(0);
@@ -15,7 +15,7 @@ jQuery( document ).ready( function() {
     geoipsl_getLocation = function() {
       if ( geoPosition.init() ) {
         geoPosition.getCurrentPosition( geoipsl_onGeoSuccess, geoipsl_onGeoError, {
-          enableHighAccuracy: ( 1 == parseInt( geoipslapp.enableHighAccuracy ) ? true : false ),
+          enableHighAccuracy: ( 1 == parseInt( geoipsltracker.enableHighAccuracy ) ? true : false ),
           maximumAge: 3600000,
         } );
       } else {
@@ -25,7 +25,7 @@ jQuery( document ).ready( function() {
 
     geoipsl_onGeoSuccess = function( position ) {
       $.ajax( {
-        url: geoipslapp.ajaxurl,
+        url: geoipsltracker.ajaxurl,
         type: 'POST',
         data: {
           action: 'ajax_redirect_to_geoip_subsite',

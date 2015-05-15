@@ -5,7 +5,6 @@
  * @since 0.4.0
  */
 
-
 add_shortcode( 'geoipsl_remember_last_site', 'geoipsl_remember_last_site_form' );
 function geoipsl_remember_last_site_form( $atts ) {
   global $geoipsl_admin_settings;
@@ -41,12 +40,23 @@ function geoipsl_remember_last_site_form( $atts ) {
 
   $output = $before . $output . $after;
 
-  if ( 'on' != $geoipsl_settings->get( 'persistent_redirect_status' ) ) {
+  if ( 'none' == $geoipsl_settings->get( 'visitor_tracking' ) ) {
     $output  = 'The GeoIPSL plugin is not configured to read cookies from ';
     $output .= 'this site. Please update your settings.';
 
     $output  = __( $output, 'geoipsl' );
   }
+
+  return $output;
+}
+
+add_shortcode( 'geoipsl_suggest_closest_site', 'geoipsl_suggest_closest_site' );
+function geoipsl_suggest_closest_site( $atts ) {
+  $before  = '<a href="" class="geoipsl-closest-site-link">';
+  $after   = '</a>';
+  $after  .= '<script type="text/javascript" src="' . trailingslashit( plugin_dir_url( __FILE__ ) ) . 'js/geoipsl-nearest-site.js' . '"></script>';
+
+  $output = $before . __( 'Closest Site', 'geoipsl' ) . $after;
 
   return $output;
 }

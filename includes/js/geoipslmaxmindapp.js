@@ -4,8 +4,8 @@ jQuery( document ).ready( function() {
     var redirect = (function(){
 
       var triggerSwitcher = function() {
-        if ( geoipslapp.triggerElement ) {
-          $switcher = $( geoipslapp.triggerElement );
+        if ( geoipsltracker.triggerElement ) {
+          $switcher = $( geoipsltracker.triggerElement );
 
           if ( $switcher.length ) {
             $switcher = $switcher.eq(0);
@@ -16,7 +16,7 @@ jQuery( document ).ready( function() {
 
       var onSuccess = function( geoipResponse ) {
         $.ajax( {
-          url: geoipslapp.ajaxurl,
+          url: geoipsltracker.ajaxurl,
           type: 'POST',
           data: {
             action: 'ajax_redirect_to_geoip_subsite',

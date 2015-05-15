@@ -51,7 +51,7 @@ class Cookies {
    * @return string
    */
   public static function get_tracking_cookie() {
-    return geoipsl_array_value( $_COOKIE, 'wp_geoipsl', '' );
+    return geoipsl_array_value( $_COOKIE, 'wp_geoipsl_tracker', '' );
   }
 
   public static function parse_tracking_cookie( $wp_geoipsl ) {

@@ -15,32 +15,6 @@ $ip = GeoIPSL\IP::get_visitor_ip( 'ip' );
 $proxy_score = (int) GeoIPSL\IP::get_visitor_ip( 'proxy_score' );
 
 /**
- * If the visitor has visited the site more than once, determine the site
- * to serve based on our client side tracking script. The result of this
- * script, which will be the blog ID of the blog to serve, is stored on a
- * cookie.
- *
- * The tracking cookie will have one and only one blog id.
- */
-$tracking_info = GeoIPSL\Cookies::get_tracking_cookie();
-$tracking_info = GeoIPSL\Cookie::parse_tracking_cookie( $tracking_info );
-
-if ( is_int( $tracking_info ) ) {
-  $blog_id = $tracking_info;
-  $tracking_info = array(
-    'href' => get_site_url( intval( $blog_id ) ),
-    'remember' => 1,
-  );
-}
-
-$tracking_info = wp_parse_args( array(
-  'href' => '',
-  'remember' => '',
-), $tracking_info );
-
-unset( $blog_id );
-
-/**
  * Check if the IP we obtained from the visitor is a reserved IP.
  */
 $ip = GeoIPSL\IP::is_reserved_ipv4( $ip  ) ? GEOIPSL_RESERVED_IP : $ip;
@@ -68,16 +42,11 @@ if ( 'ip' == $geoipsl_settings->get( 'use_geolocation' ) && $proxy_score && 'on'
   exit;
 }
 
-if ( 'none' != $geoipsl_settings->get( 'visitor_tracking' ) && $tracking_info['href'] && $tracking_info['remember'] ) {
-  wp_redirect( esc_url( $tracking_info['href'] ) );
-  exit;
-}
-
 /**
  * If we have no tracking information yet to monitor visitor browsing behavior
  * from subsite to subsite, we may use server-side geo-to-ip conversions.
  */
-if ( 'on' == $geoipsl_settings->get( 'use_geoip_detection' ) ) {
+if ( 'ip' == $geoipsl_settings->get( 'use_geolocation' ) ) {
 
   $result = $geoipsl_reader->query_city( $ip );
 
