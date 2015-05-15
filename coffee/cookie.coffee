@@ -8,7 +8,7 @@ $( document ).ready ->
     catch e
       return false
 
-  createCookie = ( name, value, days ) ->
+  createCookie = ( name, value, days, domain ) ->
     if days
       date = new Date()
       date.setTime date.getTime() + ( days*24*60*60*1000 )
@@ -16,7 +16,7 @@ $( document ).ready ->
     else
       expires = ""
 
-    document.cookie = name+"="+value+expires+"; path=/"
+    document.cookie = name+"="+value+expires+"; path=/; domain="+domain
 
   readCookie = ( name ) ->
     nameEQ = name + "="
@@ -39,9 +39,36 @@ $( document ).ready ->
   eraseCookie = ( name ) ->
     createCookie name, "", -1
 
-  $persistenceFormCheck = $ 'input[name="geoipsl-persistent-redirect"]'
-  blogid                = window.geoipsltracker.blogid
-  rememberLastBlogId    = window.geoipsltracker.rememberLastBlogId
+  $rememberForm = $ 'input[name="geoipsl-remember-me"]'
+  $geoipslLinks = $ '[href][data-geoipsl-track]'
 
-  if $persistenceFormCheck.length
-    $persistenceFormCheck.on 'change', ( evt ) ->
+  if $rememberForm.length
+    $rememberForm.on 'change', ( evt ) ->
+      if not $(@).is ':checked'
+        eraseCookie 'wp_geoipsl'
+
+  if ( $geoipslLinks.length and not $rememberForm.length ) or ( $geoipslLinks.length and $rememberForm.length and $rememberForm.is ':checked' )
+    $geoipslLinks.on 'click', ( evt ) ->
+      evt.preventDefault()
+
+      href = $(@).attr 'href'
+      remember = if $rememberForm.is ':checked' then 1 else 0
+
+      wp_geoipsl =
+        href: href
+        remember: remember
+
+      wp_geoipsl = JSON.stringify wp_geoipsl
+
+      domain = if window.geoipsltracker.currentSite then window.geoipsltracker.currentSite else ''
+      domain = domain.trim()
+      domain = domain.replace /^https?:\/\//g, ''
+      domain = domain.replace /\/$/g, ''
+      domain = ".#{domain}"
+
+      console.log domain
+
+      eraseCookie 'wp_geoipsl'
+      createCookie 'wp_geoipsl', wp_geoipsl, 30, domain
+
+      window.location = href

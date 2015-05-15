@@ -44,7 +44,7 @@ class IP {
     $proxy_score = 0;
 
     // if debugging is on
-    if ( GEOIPSL_ON_STATUS == $geoipsl_settings->get( 'geoip_test_status' ) ) {
+    if ( 'on' == $geoipsl_settings->get( 'geoip_test_status' ) ) {
 
       $ip_info['ip']          = $geoipsl_settings->get( 'geoip_test_ip' );
       $ip_info['proxy_score'] = $proxy_score;

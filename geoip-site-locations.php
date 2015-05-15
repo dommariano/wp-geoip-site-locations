@@ -45,8 +45,6 @@ define( 'GEOIPSL_DATABASE_VERSION', 1 );
 define( 'GEOIPSL_MINIMUM_WP_VERSION', '3.9.2' );
 define( 'GEOIPSL_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'GEOIPSL_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
-define( 'GEOIPSL_OFF_STATUS','off' );
-define( 'GEOIPSL_ON_STATUS', 'on' );
 define( 'GEOIPSL_DISTANCE_LIMIT', 1 );
 define( 'GEOIPSL_PERSISTENCE_INTERVAL', 0 );
 define( 'GEOIPSL_INVALID_IP', -1 );

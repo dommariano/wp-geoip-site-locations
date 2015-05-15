@@ -154,14 +154,14 @@ class Site_Locations {
      */
     if ( self::is_on_site_entry_point( get_current_blog_id() ) ) {
 
-      if ( is_user_logged_in() && GEOIPSL_ON_STATUS == $geoipsl_settings->get( 'geoip_test_status' ) ) {
+      if ( is_user_logged_in() && 'on' == $geoipsl_settings->get( 'geoip_test_status' ) ) {
         return 1;
       }
 
       if ( $mobile_detect->isMobile() || $mobile_detect->isTablet() ) {
         add_action( 'wp_enqueue_scripts', array( __CLASS__ , 'load_mobile_app' ), 1 );
       } else {
-        if ( GEOIPSL_ON_STATUS == $geoipsl_settings->get( 'redirect_after_load_status' ) ) {
+        if ( 'on' == $geoipsl_settings->get( 'redirect_after_load_status' ) ) {
           add_action( 'wp_enqueue_scripts', array( __CLASS__ , 'load_maxmind_js_app' ), 1 );
         } else {
           self::redirect_to_geoip_desktop_subsite();
@@ -209,14 +209,6 @@ class Site_Locations {
 
     global $geoipsl_settings;
 
-    $site_id = get_current_site();
-    $site_id = $site_id->id;
-    $blog_id = get_current_blog_id();
-
-    if ( $site_id != $blog_id ) {
-      return 1;
-    }
-
     wp_register_script( 'geoipslapp', trailingslashit( plugin_dir_url( __FILE__ ) ) . 'js/geoipslapp.js', array( 'jquery' ), NULL );
     wp_register_script( 'geoipslpos', trailingslashit( plugin_dir_url( __FILE__ ) ) . 'js/geoPosition.js', NULL, NULL );
     wp_localize_script( 'geoipslapp', 'geoipslapp', array(
@@ -235,19 +227,14 @@ class Site_Locations {
   public static function load_cookie_js() {
     global $geoipsl_settings;
 
-    $site_id = get_current_site();
-    $site_id = $site_id->id;
-    $blog_id = get_current_blog_id();
-
-    if ( $site_id != $blog_id ) {
-      return 1;
-    }
+    $current_site = get_current_site();
+    $current_site = $current_site->domain;
 
     wp_register_script( 'geoipsl-cookie', trailingslashit( plugin_dir_url( __FILE__ ) ) . 'js/geoipsl-cookie.js', array( 'jquery' ), NULL );
     wp_localize_script( 'geoipsl-cookie', 'geoipsltracker', array(
-      'siteid' => $site_id,
-      'blogid' => $blog_id,
-      'rememberLastBlogId' => true,
+      'readCookies' => true,
+      'currentBlog' => site_url(),
+      'currentSite' => $current_site,
     ) );
     wp_enqueue_script( 'geoipsl-cookie' );
   }
@@ -318,7 +305,7 @@ class Site_Locations {
       return GEOIPSL_RESERVED_IP;
     }
 
-    if ( 0 != (int) IP::get_visitor_ip( 'proxy_score' ) && GEOIPSL_OFF_STATUS == $geoipsl_settings->get( 'query_proxies_status' ) ) {
+    if ( 0 != (int) IP::get_visitor_ip( 'proxy_score' ) && 'off' == $geoipsl_settings->get( 'query_proxies_status' ) ) {
       return GEOIPSL_MAYBE_PROXY;
     }
 

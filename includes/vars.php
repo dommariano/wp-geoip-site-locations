@@ -12,6 +12,17 @@ $geoipsl_reader = new GeoIPSL\Reader();
 $geoipsl_settings = new GeoIPSL\Settings( (array) get_option( geoipsl( 'site_group_head_settings' ), array() ) );
 $geoipsl_db_file_to_use  = GeoIPSL\Reader::get_path_to_geoip_db_reader( $geoipsl_settings->get( 'geoip_db' ) );
 
+/**
+ * Provide default values to configuration options.
+ */
+if ( '' == $geoipsl_settings->get( 'use_geolocation' ) ) {
+  $geoipsl_settings->set( 'use_geolocation', 'manual' );
+}
+
+if ( '' == $geoipsl_settings->get( 'visitor_tracking' ) ) {
+  $geoipsl_settings->set( 'visitor_tracking', 'none' );
+}
+
 // plugin must automatically download if this is not present
 if ( file_exists( $geoipsl_db_file_to_use ) ) {
   $reader = new GeoIp2\Database\Reader( $geoipsl_db_file_to_use );

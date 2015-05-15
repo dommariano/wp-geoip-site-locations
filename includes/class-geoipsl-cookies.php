@@ -54,37 +54,7 @@ class Cookies {
     return geoipsl_array_value( $_COOKIE, 'wp_geoipsl', '' );
   }
 
-  /**
-   * Create wp_geoipsl cookie with visitor browsing behaviour tracking
-   * information.
-   *
-   * @since 0.1.0
-   * @todo Handle case for updating limits.
-   *
-   * @param int $blog_id The current blog id.
-   * @param int $limit The number of site visits to track in the wp_geoipsl cookie.
-   * @param int $_time_code The time ( UNIX timestamp ) that visitor accessed the site.
-   * @return void
-   */
-  public static function set_location_cookie( $blog_id = 1 ) {
-
-    global $post;
-
-    $blog_id    = abs( $blog_id );
-    $wp_geoipsl = str_replace( ' ', '', (string) self::get_tracking_cookie() );
-    $domain     = preg_replace( "/^http(s?):\/\//", '', trim( get_site_url( 1 ) ) );
-
-    /**
-     * Only record the cookie info first time visitor, then on subsequent
-     * visits, the cookie change will be handled by Javascript on the client
-     * side. This should allow for more complicated tracking without compro-
-     * mising the cookie size.
-     */
-    if ( '' == $wp_geoipsl ) {
-      $time_code  = $_time_code;
-      $wp_geoipsl = $blog_id;
-    }
-
-    setcookie( 'wp_geoipsl', $wp_geoipsl, 0, '/', sprintf( ".%s", $domain ) );
+  public static function parse_tracking_cookie( $wp_geoipsl ) {
+    return $wp_geoipsl = json_decode( stripslashes( $wp_geoipsl ), true );
   }
 }

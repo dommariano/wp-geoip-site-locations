@@ -422,17 +422,17 @@ if ( $do_action ) {
     case 'geoipsl_config_save':
       $remove_args = array();
 
-      $option_value = geoipsl_request_value( 'use_geoip_detection', GEOIPSL_OFF_STATUS );
-      $geoipsl_settings->set( 'use_geoip_detection', (string) $option_value, 'string', array(
-        'range' => array( 'on', 'off' ),
+      $option_value = geoipsl_request_value( 'use_geolocation', 'manual' );
+      $geoipsl_settings->set( 'use_geolocation', (string) $option_value, 'string', array(
+        'range' => array( 'ip', 'h5', 'manual' ),
       ) );
-      $remove_args[] = 'use_geoip_detection';
+      $remove_args[] = 'use_geolocation';
 
-      $option_value = geoipsl_request_value( 'geoipsl_cache_settings', GEOIPSL_OFF_STATUS );
-      $geoipsl_settings->set( 'geoipsl_cache_settings', (string) $option_value, 'string', array(
-        'range' => array( 'on', 'off' ),
+      $option_value = geoipsl_request_value( 'visitor_tracking', 'none' );
+      $geoipsl_settings->set( 'visitor_tracking', (string) $option_value, 'string', array(
+        'range' => array( 'none', 'last', 'suggest' ),
       ) );
-      $remove_args[] = 'geoipsl_cache_settings';
+      $remove_args[] = 'visitor_tracking';
 
       $option_value = geoipsl_request_value( 'lightbox_trigger_element' );
       $geoipsl_settings->set( 'lightbox_trigger_element', (string) $option_value );
@@ -442,11 +442,11 @@ if ( $do_action ) {
       $geoipsl_settings->set( 'distance_limit', (int) $option_value );
       $remove_args[] = 'distance_limit';
 
-      $option_value = geoipsl_request_value( 'query_proxies_status', GEOIPSL_OFF_STATUS );
+      $option_value = geoipsl_request_value( 'query_proxies_status', 'off' );
       $geoipsl_settings->set( 'query_proxies_status', (string) $option_value );
       $remove_args[] = 'query_proxies_status';
 
-      $option_value = geoipsl_request_value( 'redirect_after_load_status', GEOIPSL_OFF_STATUS );
+      $option_value = geoipsl_request_value( 'redirect_after_load_status', 'off' );
       $geoipsl_settings->set( 'redirect_after_load_status', (string) $option_value );
       $remove_args[] = 'redirect_after_load_status';
 
