@@ -341,7 +341,7 @@ if ( $do_action ) {
       $query_args = array();
 
       $geoipsl_settings->set( 'geoip_test_status', 'off' );
-      $query_args[] = 'geoip_test_on';
+      $query_args[] = 'geoip_test_status';
 
       $geoipsl_settings->set( 'geoip_test_database_or_service', 1 );
       $query_args[] = 'geoip_test_database_or_service';

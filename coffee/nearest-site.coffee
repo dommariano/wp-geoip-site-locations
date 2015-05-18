@@ -17,7 +17,6 @@ $( document ).ready ->
         lat_from: position.coords.latitude
         lang_from: position.coords.longitude
       success: (result) ->
-        console.log "debug", result
 
         result = $.parseJSON(result)
 

@@ -290,8 +290,8 @@ class Site_Locations {
     $coords    = array();
     $blog_ids  = array( 0 => 1 );
 
-    if ( $geoipsl_settings->get( 'geoip_test_on' ) ) {
-      if ( '' !== $geoipsl_settings->get( 'test_mobile_coords_from' ) ) {
+    if ( 'on' == $geoipsl_settings->get( 'geoip_test_status' ) ) {
+      if ( '' != $geoipsl_settings->get( 'test_mobile_coords_from' ) ) {
         $coords = explode( ',', str_replace( ' ', '', $geoipsl_settings->get( 'test_mobile_coords_from' ) ) );
       }
     } else {

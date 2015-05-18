@@ -140,11 +140,17 @@ class Distance {
     * @return int $closest_site
     */
   public static function get_closest_site( $lat_from, $long_from, $limit = 100000 ) {
+    $current_site = get_current_site();
+    $current_site = $current_site->id;
+
 
     $lat_from = floatval( $lat_from );
     $long_from = floatval( $long_from );
 
+    switch_to_blog( $current_site );
     $site_locations = get_option( geoipsl( 'activated_locations' ), array() );
+    restore_current_blog();
+
     $site_distances = array();
     $closest_sites = array( 1 );
 
