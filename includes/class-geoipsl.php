@@ -6,54 +6,65 @@ if ( ! function_exists( 'add_action' ) && ! function_exists( 'add_filter' ) ) {
 }
 
 /**
-  * Main plugin class.
-  *
-  * This class handles redirects. Users coming from desktops
-  * will be redirected based on their IP address using the MaxMind GeoIP database or premium
-  * web service. Visitors coming from mobile devices the support HTML5 Geolocaiton API will
-  * be redirected using that APi. Visitors coming mobile devices without the HTML5 Geolocation
-  * will not be redirected, but instead will be given the option to select the site location
-  * they wish to be redirected to ( requires theme integration ).
-  *
-  * @since 0.1.0
-  */
+ * Main plugin class.
+ *
+ * This class handles redirects. Users coming from desktops will be redirected
+ &* based on their IP address using the MaxMind GeoIP database or premium web
+ * service. Visitors coming from mobile devices the support HTML5 Geolocaiton
+ * API will be redirected using that APi. Visitors coming mobile devices
+ * without the HTML5 Geolocation will not be redirected, but instead will be
+ * given the option to select the site location they wish to be redirected to
+ * ( requires theme integration ).
+ *
+ * @since 0.1.0
+ */
 class Site_Locations {
 
   /**
-    * Initialise the program after everything is ready.
-    *
-    * @since 0.1.0
-    *
-    * @param none
-    * @return void
-    */
+   * Initialise the program after everything is ready.
+   *
+   * @since 0.1.0
+   *
+   * @param none
+   * @return void
+   */
   public static function init() {
 
-    // ALWAYS make sure the plugin version is up-to-date.
+    /**
+     * ALWAYS make sure the plugin version is up-to-date.
+     */
     update_option( geoipsl( 'plugin_version' ), GEOIPSL_PLUGIN_VERSION );
 
-    // DO NOT automatically update the database version. We need the old value for incremental database updates.
+    /**
+     * DO NOT automatically update the database version. We need the old value
+     * for incremental database updates.
+     */
     add_option( geoipsl( 'database_version' ), GEOIPSL_DATABASE_VERSION );
 
-    // Every NONEMPTY setting that exists about this plugin.
+    /**
+     * Every NONEMPTY setting that exists about this plugin.
+     */
     add_option( geoipsl( 'settings' ), array() );
 
     add_action( 'template_redirect',                              array( __CLASS__, 'redirect_to_geoip_subsite'        ) );
     add_action( 'wp_ajax_ajax_redirect_to_geoip_subsite',         array( __CLASS__, 'ajax_redirect_to_geoip_subsite'   ) );
     add_action( 'wp_ajax_nopriv_ajax_redirect_to_geoip_subsite',  array( __CLASS__, 'ajax_redirect_to_geoip_subsite'   ) );
 
-    ob_start(); // To allow for redirection.
+    /**
+     * Hack to allow for redirection.
+     */
+    ob_start();
   }
 
   /**
-    * Checks program environment to see if all dependencies are available. If at least one
-    * dependency is absent, deactivate the plugin.
-    *
-    * @since 0.1.0
-    *
-    * @param none
-    * @return void
-    */
+   * Checks program environment to see if all dependencies are available. If at least one
+   * dependency is absent, deactivate the plugin.
+   *
+   * @since 0.1.0
+   *
+   * @param none
+   * @return void
+   */
   public static function maybe_deactivate() {
 
     global $wp_version;
@@ -132,27 +143,66 @@ class Site_Locations {
     global $geoipsl_settings;
     global $mobile_detect;
 
-    // only redirect if we are on the root site
+    /**
+     * Load the client side cookie and tracking management system regardless
+     * of whether we are on the root site or subsite.
+     */
+    add_action( 'wp_enqueue_scripts', array( __CLASS__ , 'load_cookie_js' ) );
+
+    /**
+     * If the visitor has visited the site more than once, determine the site
+     * to serve based on our client side tracking script. The result of this
+     * script, which will be the blog ID of the blog to serve, is stored on a
+     * cookie.
+     *
+     * The tracking cookie will have one and only one blog id.
+     */
+    $tracking_info = Cookies::get_tracking_cookie();
+    $tracking_info = Cookies::parse_tracking_cookie( $tracking_info );
+
+    if ( is_int( $tracking_info ) ) {
+      $blog_id = $tracking_info;
+      $tracking_info = array(
+        'href' => get_site_url( intval( $blog_id ) ),
+        'remember' => 1,
+      );
+    }
+
+   /**
+     * Ensure that the tracking info has the correct array keys.
+     */
+    $tracking_info = wp_parse_args( $tracking_info, array(
+      'href' => '',
+      'remember' => '',
+    ) );
+
+
+    if ( self::is_on_site_entry_point( get_current_blog_id() ) && 'none' != $geoipsl_settings->get( 'visitor_tracking' ) && $tracking_info['href'] && $tracking_info['remember'] ) {
+      wp_redirect( esc_url( $tracking_info['href'] ) );
+      exit;
+    }
+
+    /**
+     * Only redirect if we are on the root site.
+     */
     if ( self::is_on_site_entry_point( get_current_blog_id() ) ) {
 
-      if ( is_user_logged_in() && GEOIPSL_ON_STATUS == $geoipsl_settings->get( 'geoip_test_status' ) ) {
-        return 1;
+      if ( is_user_logged_in() && 'on' == $geoipsl_settings->get( 'geoip_test_status' ) ) {
+        return;
       }
 
       if ( $mobile_detect->isMobile() || $mobile_detect->isTablet() ) {
         add_action( 'wp_enqueue_scripts', array( __CLASS__ , 'load_mobile_app' ), 1 );
       } else {
-        if ( GEOIPSL_ON_STATUS == $geoipsl_settings->get( 'redirect_after_load_status' ) ) {
+        if ( 'h5' == $geoipsl_settings->get( 'use_geolocation' ) ) {
           add_action( 'wp_enqueue_scripts', array( __CLASS__ , 'load_maxmind_js_app' ), 1 );
-        } else {
+        } elseif( 'ip' == $geoipsl_settings->get( 'use_geolocation' ) ) {
           self::redirect_to_geoip_desktop_subsite();
         }
       }
-    } else {
-      Cookies::set_location_cookie( get_current_blog_id(), 30, time() );
     }
 
-    return 2;
+    return;
   }
 
   /**
@@ -168,10 +218,6 @@ class Site_Locations {
 
     wp_register_script( 'geoipslmaxmindjsapi', '//js.maxmind.com/js/apis/geoip2/v2.1/geoip2.js', NULL, NULL );
     wp_register_script( 'geoipslmaxmindapp', trailingslashit( plugin_dir_url( __FILE__ ) ) . 'js/geoipslmaxmindapp.js', array( 'jquery' ), NULL );
-    wp_localize_script( 'geoipslmaxmindapp', 'geoipslapp', array(
-      'ajaxurl' => admin_url( 'admin-ajax.php' ),
-      'triggerElement' => $geoipsl_settings->get( 'lightbox_trigger_element' ),
-    ) );
 
     if ( ! wp_script_is('jquery', 'enqueued') ) {
       wp_enqueue_script( 'jquery');
@@ -192,28 +238,33 @@ class Site_Locations {
 
     global $geoipsl_settings;
 
-    $site_id = get_current_site();
-    $site_id = $site_id->id;
-    $blog_id = get_current_blog_id();
-
-    if ( $site_id != $blog_id ) {
-      return 1;
-    }
-
     wp_register_script( 'geoipslapp', trailingslashit( plugin_dir_url( __FILE__ ) ) . 'js/geoipslapp.js', array( 'jquery' ), NULL );
-    wp_register_script( 'geoipslpos', trailingslashit( plugin_dir_url( __FILE__ ) ) . 'js/geoPosition.js', NULL, NULL );
-    wp_localize_script( 'geoipslapp', 'geoipslapp', array(
-      'ajaxurl' => admin_url( 'admin-ajax.php' ),
-      'triggerElement' => $geoipsl_settings->get( 'lightbox_trigger_element' ),
-      'enableHighAccuracy' => (bool) $geoipsl_settings->get( 'mobile_high_accuracy_status' ),
-    ) );
 
     if ( ! wp_script_is('jquery', 'enqueued') ) {
       wp_enqueue_script( 'jquery');
     }
 
-    wp_enqueue_script( 'geoipslpos');
     wp_enqueue_script( 'geoipslapp');
+  }
+
+  public static function load_cookie_js() {
+    global $geoipsl_settings;
+
+    $current_site = get_current_site();
+    $current_site = $current_site->domain;
+
+    wp_register_script( 'geoipslpos', trailingslashit( plugin_dir_url( __FILE__ ) ) . 'js/geoPosition.js', NULL, NULL );
+    wp_register_script( 'geoipsl-cookie', trailingslashit( plugin_dir_url( __FILE__ ) ) . 'js/geoipsl-cookie.js', array( 'jquery' ), NULL );
+    wp_localize_script( 'geoipsl-cookie', 'geoipsltracker', array(
+      'readCookies' => true,
+      'currentBlog' => site_url(),
+      'currentSite' => $current_site,
+      'ajaxurl' => admin_url( 'admin-ajax.php' ),
+      'triggerElement' => $geoipsl_settings->get( 'lightbox_trigger_element' ),
+    ) );
+
+    wp_enqueue_script( 'geoipslpos');
+    wp_enqueue_script( 'geoipsl-cookie' );
   }
 
   /**
@@ -221,8 +272,7 @@ class Site_Locations {
    *
    * @since 0.1.0
    *
-   * @param none
-   * @return void
+   * @param none * @return void
    */
   public static function ajax_redirect_to_geoip_subsite() {
     global $geoipsl_settings;
@@ -240,8 +290,8 @@ class Site_Locations {
     $coords    = array();
     $blog_ids  = array( 0 => 1 );
 
-    if ( $geoipsl_settings->get( 'geoip_test_on' ) ) {
-      if ( '' !== $geoipsl_settings->get( 'test_mobile_coords_from' ) ) {
+    if ( 'on' == $geoipsl_settings->get( 'geoip_test_status' ) ) {
+      if ( '' != $geoipsl_settings->get( 'test_mobile_coords_from' ) ) {
         $coords = explode( ',', str_replace( ' ', '', $geoipsl_settings->get( 'test_mobile_coords_from' ) ) );
       }
     } else {
@@ -256,7 +306,7 @@ class Site_Locations {
     $blog_urls = array();
 
     foreach ( $blog_ids as $key => $blog_id ) {
-      $blog_urls[] = array( $blog_id, get_site_url( $blog_id ) );
+      $blog_urls[] = array( $blog_id, get_site_url( $blog_id ), $lat_from, $lang_from );
     }
 
     echo json_encode( $blog_urls );
@@ -283,7 +333,7 @@ class Site_Locations {
       return GEOIPSL_RESERVED_IP;
     }
 
-    if ( 0 != (int) IP::get_visitor_ip( 'proxy_score' ) && GEOIPSL_OFF_STATUS == $geoipsl_settings->get( 'query_proxies_status' ) ) {
+    if ( 0 != (int) IP::get_visitor_ip( 'proxy_score' ) && 'off' == $geoipsl_settings->get( 'query_proxies_status' ) ) {
       return GEOIPSL_MAYBE_PROXY;
     }
 
@@ -313,7 +363,7 @@ class Site_Locations {
     global $post;
 
     if ( ! is_int( $blog_id ) ) {
-      throw new \InvalidArgumentException( 'is_on_site_entry_point expects $blog_id to be integer, ' . gettype( $blog_id ) . ' given.' );
+      return FALSE;
     }
 
     if ( ! $geoipsl_settings->get( 'site_entry_page' ) ) {

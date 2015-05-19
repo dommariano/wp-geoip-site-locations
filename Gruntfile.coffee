@@ -20,6 +20,17 @@ module.exports = (grunt) ->
     clean:
       build: ["#{build}/", "#{build}.zip"]
 
+    coffee:
+      compile:
+        files:
+          'includes/js/geoipsl-cookie.js' : 'coffee/cookie.coffee'
+          'includes/js/geoipsl-nearest-site.js' : 'coffee/nearest-site.coffee'
+
+    watch:
+      scripts:
+        files: 'coffee/**/*.coffee'
+        tasks: ['coffee']
+
     copy:
       build:
         files: [
@@ -61,6 +72,7 @@ module.exports = (grunt) ->
             dest: "#{build}/"
           }
         ]
+
     compress:
       build:
         options:
@@ -71,15 +83,15 @@ module.exports = (grunt) ->
         src: "**/*"
 
   # These plugins provide necessary tasks
-
+  grunt.loadNpmTasks 'grunt-contrib-watch'
   grunt.loadNpmTasks 'grunt-contrib-concat'
   grunt.loadNpmTasks 'grunt-contrib-uglify'
-  grunt.loadNpmTasks 'grunt-contrib-nodeunit'
   grunt.loadNpmTasks 'grunt-contrib-watch'
   grunt.loadNpmTasks 'grunt-contrib-copy'
   grunt.loadNpmTasks 'grunt-contrib-clean'
   grunt.loadNpmTasks 'grunt-contrib-compress'
+  grunt.loadNpmTasks 'grunt-contrib-coffee'
 
   # Default task.
-  grunt.registerTask 'default', ['nodeunit', 'concat', 'uglify']
+  grunt.registerTask 'default', ['coffee']
   grunt.registerTask 'build', ['clean:build', 'copy:build', 'compress:build']
