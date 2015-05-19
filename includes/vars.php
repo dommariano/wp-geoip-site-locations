@@ -28,7 +28,9 @@ if ( '' == $geoipsl_settings->get( 'visitor_tracking' ) ) {
   $geoipsl_settings->set( 'visitor_tracking', 'none' );
 }
 
-// plugin must automatically download if this is not present
+/**
+ * If the geipdb file does not exist, do not set the plugin to read from it.
+ */
 if ( file_exists( $geoipsl_db_file_to_use ) ) {
   $reader = new GeoIp2\Database\Reader( $geoipsl_db_file_to_use );
   $geoipsl_reader->set_geoip_db_reader( $reader );
