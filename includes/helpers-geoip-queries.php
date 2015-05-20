@@ -15,23 +15,24 @@ function geoipsl_get_remaining_queries( $web_service ) {
   global $geoipsl_settings, $geoipsl_admin_settings;
 
   $web_service = intval( $web_service );
+  $left = '';
 
   switch ( $web_service ) {
     case 1: // country
-      return (int) $geoipsl_settings->get( 'country_queries_left' );
+      $left = (int) $geoipsl_settings->get( 'country_queries_left' );
       break;
     case 2: // precision city
-      return (int) $geoipsl_settings->get( 'city_queries_left' );
+      $left = (int) $geoipsl_settings->get( 'city_queries_left' );
       break;
     case 3:
-      return (int) $geoipsl_settings->get( 'insights_queries_left' );
+      $left = (int) $geoipsl_settings->get( 'insights_queries_left' );
       break;
     default:
       return 0;
       break;
   }
 
-  return 0;
+  return 0 == $left ? '' : $left;
 }
 
 function geoipsl_set_maxmind_queries( $web_service, $remaining ) {

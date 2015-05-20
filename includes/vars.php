@@ -45,8 +45,12 @@ if ( $geoipsl_settings->get( 'geoip_web_service' ) &&
     $geoipsl_settings->get( 'maxmind_license_key' )
   ) );
 
-  // if were are running out of queries, let's go back to using local dbs
-  if ( geoipsl_get_remaining_queries( $geoipsl_settings->get( 'geoip_web_service' ) ) >= 100 ) {
+  $queries_left = geoipsl_get_remaining_queries( $geoipsl_settings->get( 'geoip_web_service' ) );
+
+  // if were are running out of queries
+  // or it this is our first time using the web service on this site
+  // let's go back to using local dbs
+  if ( '' == $queries_left || $queries_left >= 100 ) {
     $geoipsl_reader->set_to_use_remote_db();
   } else {
     $geoipsl_reader->set_to_use_geoip_db();
