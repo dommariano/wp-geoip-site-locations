@@ -200,6 +200,10 @@ class Site_Locations {
           self::redirect_to_geoip_desktop_subsite();
         }
       }
+    } else {
+      if ( 'write' == $geoipsl_settings->get( 'visitor_tracking' ) ) {
+        Cookies::write_tracking_cookie();
+      }
     }
 
     return;

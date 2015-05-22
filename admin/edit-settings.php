@@ -430,7 +430,7 @@ if ( $do_action ) {
 
       $option_value = geoipsl_request_value( 'visitor_tracking', 'none' );
       $geoipsl_settings->set( 'visitor_tracking', (string) $option_value, 'string', array(
-        'range' => array( 'none', 'last', 'suggest' ),
+        'range' => array( 'none', 'read', 'write', 'suggest' ),
       ) );
       $remove_args[] = 'visitor_tracking';
 

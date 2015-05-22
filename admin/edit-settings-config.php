@@ -58,8 +58,14 @@
 <br>
 
 <label for="remember_last_served_site">
-<input name="visitor_tracking"  type="radio" id="remember_last_served_site" value="last" <?php echo checked( $geoipsl_admin_settings->get( 'visitor_tracking' ), 'last' ); ?> >
-<?php _e( 'Remember the last served site for return visitors and serve it instead.', 'geoipsl' ); ?>
+<input name="visitor_tracking"  type="radio" id="remember_last_served_site" value="read" <?php echo checked( $geoipsl_admin_settings->get( 'visitor_tracking' ), 'read' ); ?> >
+<?php _e( 'Read cookies from site visitor, but do not write them. Use the "remember-me" shortcode. <span style="color: #d46f15">( very alpha )</span>', 'geoipsl' ); ?>
+</label>
+<br>
+
+<label for="remember_last_served_site">
+<input name="visitor_tracking"  type="radio" id="remember_last_served_site" value="write" <?php echo checked( $geoipsl_admin_settings->get( 'visitor_tracking' ), 'write' ); ?> >
+<?php _e( 'Write cookies whenever a subsite is served, and read on next visit. <span style="color: #d46f15">( very alpha )</span>', 'geoipsl' ); ?>
 </label>
 <br>
 

@@ -47,7 +47,7 @@ $( document ).ready ->
   domain = domain.replace /\/$/g, ''
   domain = ".#{domain}"
 
-  cookieData = $.parseJSON readCookie 'wp_geoipsl_tracker'
+  cookieData = $.parseJSON unescape readCookie 'wp_geoipsl_tracker'
 
   if cookieData && cookieData.remember
     $rememberForm.prop( 'checked', true )
