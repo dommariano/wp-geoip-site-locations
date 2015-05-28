@@ -40,7 +40,7 @@
       $value = preg_match( "/value\=\"(\d+)\"/i", $row['check'], $matches );
       $value = isset( $matches[1] ) ? $matches[1] : '';
 
-      $default = $geoipsl_admin_settings->get_geoip_web_service();
+      $default = $geoipsl_admin_settings->get('geoip_web_service');
 
       if ( $value == $default ) {
         $rows[ $index ]['check'] = preg_replace( "/\>$/", 'checked="checked" >', $row['check'] );

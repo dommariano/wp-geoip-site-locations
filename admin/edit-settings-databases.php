@@ -196,7 +196,7 @@
     $value = isset( $matches[1] ) ? $matches[1] : 1;
     $value = abs( $value );
 
-    $default = $geoipsl_admin_settings->get_geoip_db();
+    $default = $geoipsl_admin_settings->get('geoip_db');
     $default = ( '' == $default ) ? 1 : $default;
 
     if ( $value == $default ) {

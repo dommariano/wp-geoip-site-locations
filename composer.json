@@ -9,9 +9,14 @@
 
     "autoload": {
     	"files" : [
-            "includes/helpers.php",
-            "includes/vars.php",
-            "admin/admin.php"
+      "includes/helpers.php",
+	    "includes/helpers-array.php",
+	    "includes/helpers-date.php",
+	    "includes/helpers-files.php",
+	    "includes/helpers-geoip-queries.php",
+	    "includes/helpers-locations.php",
+      "includes/vars.php",
+      "admin/admin.php"
     	],
     	"psr-4": {
     		"GeoIPSL\\": "includes"

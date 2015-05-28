@@ -14,17 +14,22 @@ if ( ! function_exists( 'add_action' ) && ! function_exists( 'add_filter' ) ) {
 class IP {
 
   /**
-    * Attempt to get the visitor WAN/LAN IP using $_SERVER variables AND detect if user is using a proxy.
+    * Attempt to get the visitor WAN/LAN IP using $_SERVER variables AND
+    * detect if user is using a proxy.
     *
-    * This function cannot differentiate between a distorting proxy and a transparent proxy. This also cannot
-    * differentiate between a high anonymous proxy and user no proxy at all. Thus, this function can only
-    * determine some distorting or transparent open proxies. Anonymous proxy IP and true user IP is treated the same.
+    * This function cannot differentiate between a distorting proxy and a
+    * transparent proxy. This also cannot differentiate between a high
+    * anonymous proxy and user no proxy at all. Thus, this function can only
+    * determine some distorting or transparent open proxies. Anonymous proxy IP
+    * and true user IP is treated the same.
     *
     * @since 0.1.0
     *
-    * @param string $only Filter to isolate results. 'ip' will return only the IP address, 'proxy_score' will
-    *        return only the proxy score. Anything else will return an array containing both.
-    * @return string | array IP address or proxy score or an array containing both.
+    * @param string $only Filter to isolate results. 'ip' will return only the
+    * IP address, 'proxy_score' will return only the proxy score. Anything else
+    * will return an array containing both.
+    * @return string | array IP address or proxy score or an array containing
+    * both.
     */
   public static function get_visitor_ip( $only = '' ) {
 
@@ -39,7 +44,7 @@ class IP {
     $proxy_score = 0;
 
     // if debugging is on
-    if ( GEOIPSL_ON_STATUS == $geoipsl_settings->get( 'geoip_test_status' ) ) {
+    if ( 'on' == $geoipsl_settings->get( 'geoip_test_status' ) ) {
 
       $ip_info['ip']          = $geoipsl_settings->get( 'geoip_test_ip' );
       $ip_info['proxy_score'] = $proxy_score;
@@ -82,7 +87,8 @@ class IP {
     *
     * @param string $ip A valid non-reserved IPv4 IP
     * @param string $range A valid non-reserved IPv4 CIDR
-    * @return bool Boolean false if IP is not valid IPv4, or CIRD is not valid IPv4 CIDR
+    * @return bool Boolean false if IP is not valid IPv4, or CIRD is not valid
+    * IPv4 CIDR
     */
   public static function cidr_match_ipv4( $ip, $range ) {
     list ( $subnet, $bits ) = explode( '/', $range );
@@ -109,7 +115,8 @@ class IP {
     * @since 0.1.0
     *
     * @param string $ip A valid non-reserved IPv4 IP
-    * @return bool|int Boolean true if IP is reserved, false if not reserved, 0 if invalid IP is given.
+    * @return bool|int Boolean true if IP is reserved, false if not reserved,
+    * 0 if invalid IP is given.
     */
   public static function is_reserved_ipv4( $ip ) {
 

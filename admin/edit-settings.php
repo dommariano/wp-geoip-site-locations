@@ -184,31 +184,35 @@ if ( $do_action ) {
       break;
 
     case 'geoipsl_save_database':
-      $geoipsl_admin_settings->set_geoip_db( geoipsl_request_value( 'geoip_db', 1 ) );
+      $geoipsl_settings->set( 'geoip_db', geoipsl_request_value( 'geoip_db', 1 ), 'int', array(
+        'range' => range( 1, 3 ),
+      ) );
       break;
 
     case 'geoipsl_save_api_keys':
       $geoipsl_admin_settings->set_maxmind_user_id( geoipsl_request_value( 'maxmind_user_id' ) );
       $geoipsl_admin_settings->set_maxmind_license_key( geoipsl_request_value( 'maxmind_license_key' ) );
-      $geoipsl_admin_settings->set_google_gdm_client_id( geoipsl_request_value( 'google_gdm_client_id' ) );
-      $geoipsl_admin_settings->set_google_gdm_client_id_crypto_key( geoipsl_request_value( 'google_gdm_client_id_crypto_key' ) );
-      $geoipsl_admin_settings->set_google_grgc_api_key( geoipsl_request_value( 'google_grgc_api_key' ) );
+      $geoipsl_settings->set( 'google_gdm_client_id', geoipsl_request_value( 'google_gdm_client_id' ) );
+      $geoipsl_settings->set( 'google_gdm_client_id_crypto_key', geoipsl_request_value( 'google_gdm_client_id_crypto_key' ) );
+      $geoipsl_settings->set( 'google_grgc_api_key', geoipsl_request_value( 'google_grgc_api_key' ) );
       break;
 
     case 'geoipsl_save_web_service':
-      $geoipsl_admin_settings->set_geoip_web_service( geoipsl_request_value( 'geoip_web_service' ) );
+      $geoipsl_settings->set( 'geoip_web_service', geoipsl_request_value( 'geoip_web_service' ), 'int', array(
+        'range' => range( 1, 3 )
+      ) );
       break;
 
     case 'geoipsl_clear_web_service':
-      $geoipsl_admin_settings->set_geoip_web_service( '' );
+      $geoipsl_settings->set( 'geoip_web_service', '' );
       break;
 
     case 'geoipsl_clear_api_keys':
       $geoipsl_admin_settings->set_maxmind_user_id( '' );
       $geoipsl_admin_settings->set_maxmind_license_key( '' );
-      $geoipsl_admin_settings->set_google_gdm_client_id( '' );
-      $geoipsl_admin_settings->set_google_gdm_client_id_crypto_key( '' );
-      $geoipsl_admin_settings->set_google_grgc_api_key( '' );
+      $geoipsl_settings->set( 'google_gdm_client_id', '' );
+      $geoipsl_settings->set( 'google_gdm_client_id_crypto_key', '' );
+      $geoipsl_settings->set( 'google_grgc_api_key', '' );
       break;
 
     case 'geoipsl_execute_test':
@@ -296,14 +300,14 @@ if ( $do_action ) {
     case 'geoipsl_save_debug':
       $query_args = array();
 
-      $geoipsl_admin_settings->set_geoip_test_status( 'on' );
+      $geoipsl_settings->set( 'geoip_test_status', 'on' );
 
       if ( isset( $_REQUEST[ 'geoip_test_database_or_service' ] ) ) {
         // validate database/webservice choice
         $option_value = isset( $_REQUEST[ 'geoip_test_database_or_service' ] ) ? $_REQUEST[ 'geoip_test_database_or_service' ] : '';
         $option_value = in_array( $option_value, array( 1,2,3,4,5,6 ) ) ? $option_value : 1;
         $query_args[ 'geoip_test_database_or_service' ] = $option_value;
-        $geoipsl_admin_settings->set_geoip_test_database_or_service( (int) $option_value );
+        $geoipsl_settings->set( 'geoip_test_database_or_service', (int) $option_value );
       }
 
       if ( isset( $_REQUEST[ 'geoip_test_ip' ] ) ) {
@@ -336,10 +340,10 @@ if ( $do_action ) {
     case 'geoipsl_clear_test':
       $query_args = array();
 
-      $geoipsl_admin_settings->set_geoip_test_status( 'off' );
-      $query_args[] = 'geoip_test_on';
+      $geoipsl_settings->set( 'geoip_test_status', 'off' );
+      $query_args[] = 'geoip_test_status';
 
-      $geoipsl_admin_settings->set_geoip_test_database_or_service( 1 );
+      $geoipsl_settings->set( 'geoip_test_database_or_service', 1 );
       $query_args[] = 'geoip_test_database_or_service';
 
       $geoipsl_admin_settings->set_geoip_test_ip( '' );
@@ -418,36 +422,32 @@ if ( $do_action ) {
     case 'geoipsl_config_save':
       $remove_args = array();
 
-      $option_value = geoipsl_request_value( 'persistent_redirect_status', GEOIPSL_OFF_STATUS );
-      $geoipsl_admin_settings->set_persistent_redirect_status( (string) $option_value );
-      $remove_args[] = 'persistent_redirect_status';
+      $option_value = geoipsl_request_value( 'use_geolocation', 'manual' );
+      $geoipsl_settings->set( 'use_geolocation', (string) $option_value, 'string', array(
+        'range' => array( 'ip', 'h5', 'manual' ),
+      ) );
+      $remove_args[] = 'use_geolocation';
 
-      $option_value = geoipsl_request_value( 'persistence_interval', GEOIPSL_PERSISTENCE_INTERVAL );
-      $geoipsl_admin_settings->set_persistence_interval( (int) $option_value );
-      $remove_args[] = 'persistence_interval';
-
-      $option_value = geoipsl_request_value( 'lightbox_as_location_chooser_status', GEOIPSL_OFF_STATUS );
-      $geoipsl_admin_settings->set_lightbox_as_location_chooser_status( (string) $option_value );
-      $remove_args[] = 'lightbox_as_location_chooser_status';
+      $option_value = geoipsl_request_value( 'visitor_tracking', 'none' );
+      $geoipsl_settings->set( 'visitor_tracking', (string) $option_value, 'string', array(
+        'range' => array( 'none', 'read', 'write', 'suggest' ),
+      ) );
+      $remove_args[] = 'visitor_tracking';
 
       $option_value = geoipsl_request_value( 'lightbox_trigger_element' );
-      $geoipsl_admin_settings->set_lightbox_trigger_element( (string) $option_value );
+      $geoipsl_settings->set( 'lightbox_trigger_element', (string) $option_value );
       $remove_args[] = 'lightbox_trigger_element';
 
-      $option_value = geoipsl_request_value( 'mobile_high_accuracy_status', GEOIPSL_OFF_STATUS );
-      $geoipsl_admin_settings->set_mobile_high_accuracy_status( (string) $option_value );
-      $remove_args[] = 'mobile_high_accuracy_status';
-
       $option_value = geoipsl_request_value( 'distance_limit', GEOIPSL_DISTANCE_LIMIT );
-      $geoipsl_admin_settings->set_distance_limit( (int) $option_value );
+      $geoipsl_settings->set( 'distance_limit', (int) $option_value );
       $remove_args[] = 'distance_limit';
 
-      $option_value = geoipsl_request_value( 'query_proxies_status', GEOIPSL_OFF_STATUS );
-      $geoipsl_admin_settings->set_query_proxies_status( (string) $option_value );
+      $option_value = geoipsl_request_value( 'query_proxies_status', 'off' );
+      $geoipsl_settings->set( 'query_proxies_status', (string) $option_value );
       $remove_args[] = 'query_proxies_status';
 
-      $option_value = geoipsl_request_value( 'redirect_after_load_status', GEOIPSL_OFF_STATUS );
-      $geoipsl_admin_settings->set_redirect_after_load_status( (string) $option_value );
+      $option_value = geoipsl_request_value( 'redirect_after_load_status', 'off' );
+      $geoipsl_settings->set( 'redirect_after_load_status', (string) $option_value );
       $remove_args[] = 'redirect_after_load_status';
 
       $send_back = remove_query_arg( $remove_args, $send_back );
@@ -462,13 +462,11 @@ if ( $do_action ) {
   exit;
 }
 
-
 $geoip_test_database_or_service = geoipsl_request_or_saved_value( 'geoip_test_database_or_service' );
 $geoip_test_ip                  = geoipsl_request_or_saved_value( 'geoip_test_ip', '', GEOIPSL_INVALID_IP );
 $geoip_test_database_or_service = geoipsl_request_or_saved_value( 'geoip_test_database_or_service' );
 $test_mobile_coords_from        = geoipsl_request_or_saved_value( 'test_mobile_coords_from', '', GEOIPSL_INVALID_TEST_COORDINATE );
 $test_coords_to                 = geoipsl_request_or_saved_value( 'test_coords_to', '', GEOIPSL_INVALID_TEST_COORDINATE, 'base64_decode' );
-
 
 // notification messages
 $nags = $messages = array();

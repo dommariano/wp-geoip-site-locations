@@ -1,105 +1,120 @@
 <form id="geoipsl-settings-keys" action="" method="">
 
-  <?php wp_nonce_field( 'geoipsl_settings' ); ?>
+<?php wp_nonce_field( 'geoipsl_settings' ); ?>
 
-  <input type="hidden" name="page" value="geoip-site-locations/geoip-site-locations.php">
-  <input type="hidden" name="tab" value="config">
+<input type="hidden" name="page" value="geoip-site-locations/geoip-site-locations.php">
+<input type="hidden" name="tab" value="config">
 
-  <table class="form-table">
-    <tbody>
-      <tr>
-        <th scope="row"><?php _e( 'Redirect settings', 'geoipsl' ); ?></th>
-        <td>
-          <fieldset>
-            <legend class="screen-reader-text"><span><?php _e( 'Redirect settings', 'geoipsl' ); ?></span></legend>
+<table class="form-table">
+<tbody>
+<tr>
+<th scope="row"><?php _e( 'Redirects', 'geoipsl' ); ?></th>
+<td>
+<fieldset>
+<legend class="screen-reader-text"><span><?php _e( 'Redirects', 'geoipsl' ); ?></span></legend>
+<label for="use_geolocation_ip">
+<input name="use_geolocation" type="radio" id="use_geolocation_ip" value="ip"<?php echo checked( $geoipsl_settings->get( 'use_geolocation' ), 'ip' ); ?> >
+<?php _e( 'Estimate visitor location using retrieved IP address then serve the matching site.', 'geoipsl' ); ?>
+</label>
+<br>
 
-            <!-- <label for="redirect_status">
-              <input name="redirect_status" type="checkbox" id="redirect_status" value=<?php printf( '"%s"', GEOIPSL_ON_STATUS ); ?> <?php echo checked( $geoipsl_admin_settings->get( 'redirect_status' ), GEOIPSL_ON_STATUS ); ?>>
-              <?php _e( 'Redirect users to apppropriate subsite when they visit site home page.', 'geoipsl' ); ?>
-            </label>
-            <br> -->
+<label for="use_geolocation_h5">
+<input name="use_geolocation" type="radio" id="use_geolocation_h5" value="h5"<?php echo checked( $geoipsl_settings->get( 'use_geolocation' ), 'h5' ); ?> >
+<?php _e( 'Use HTML5 Geolocation API and then redirect to matching site as soon as page is served.', 'geoipsl' ); ?>
+</label>
+<br>
 
-            <label for="redirect_after_load_status">
-              <input name="redirect_after_load_status" type="checkbox" id="redirect_after_load_status" value=<?php printf( '"%s"', GEOIPSL_ON_STATUS ); ?> <?php echo checked( $geoipsl_admin_settings->get( 'redirect_after_load_status' ), GEOIPSL_ON_STATUS ); ?>>
-              <?php _e( 'Load the site first and then redirect immedietly as soon as it can.', 'geoipsl' ); ?>
-            </label>
-            <br>
+<label for="use_geolocation_manual">
+<input name="use_geolocation" type="radio" id="use_geolocation_manual" value="manual" <?php echo checked( $geoipsl_settings->get( 'use_geolocation' ), 'manual' ); ?> >
+<?php _e( 'Do not estimate user location or which site to serve. Let the visitor decide.', 'geoipsl' ); ?>
+</label>
+<br>
+<p class="description"><?php _e( 'IP-based location detection will automatically fall back to HTML5-based geolocation on mobile devices.', 'geoipsl' ); ?></p>
+</fieldset>
+</td>
 
-            <label for="persistent_redirect_status">
-              <input name="persistent_redirect_status" type="checkbox" id="persistent_redirect_status" value=<?php printf( '"%s"', GEOIPSL_ON_STATUS ); ?> <?php echo checked( $geoipsl_admin_settings->get( 'persistent_redirect_status' ), GEOIPSL_ON_STATUS ); ?> >
-              <?php _e( 'Allow persistent redirect for repeat visitors.', 'geoipsl' ); ?>
-              <?php
-                $geoipsl_persistent_interval_select = array(
-                  0       => __( 'all the time',  'geoipsl' ),
-                  3600    => __( 'every hour',    'geoipsl' ),
-                  86400   => __( 'every day',     'geoipsl' ),
-                  604800  => __( 'every week',    'geoipsl' ),
-                  2592000 => __( 'every 30 days', 'geoipsl' ),
-                );
-              ?>
+</tr>
+<tr>
+<th scope="row"><?php _e( 'Proxies', 'geoipsl' ); ?></th>
+<td>
+<fieldset>
+<label for="query_proxies_status">
+<input name="query_proxies_status" type="checkbox" id="query_proxies_status" value=<?php printf( '"%s"', 'on' ); ?><?php echo checked( $geoipsl_settings->get( 'query_proxies_status' ), 'on' ); ?>>
+<?php _e( 'When using IP-based detection, allow redirects even if visitor is behind an obvious proxy.', 'geoipsl' ); ?>
+</label>
+<br>
+</fieldset>
+</td>
 
-              <!-- <select name="persistence_interval" id="persistence_interval" class="postform">
-                <?php
-                  foreach ( $geoipsl_persistent_interval_select as $value => $text ) {
-                    printf( '<option value="%s" %s >%s</option>', esc_attr( $value ), selected( $value, $geoipsl_admin_settings->get( 'persistence_interval' ) ), esc_attr( $text ) );
-                  }
-                ?>
-              </select> -->
-            </label>
-            <br>
+</tr>
+<tr>
+<th scope="row"><?php _e( 'Tracking', 'geoipsl' ); ?></th>
+<td>
+<fieldset>
+<label for="no_tracking">
+<input name="visitor_tracking"  type="radio" id="no_tracking" value="none" <?php echo checked( $geoipsl_admin_settings->get( 'visitor_tracking' ), 'none' ); ?> >
+<?php _e( 'Do not track visitors.', 'geoipsl' ); ?>
+</label>
+<br>
 
-            <label for="query_proxies_status">
-              <input name="query_proxies_status" type="checkbox" id="query_proxies_status" value=<?php printf( '"%s"', GEOIPSL_ON_STATUS ); ?> <?php echo checked( $geoipsl_admin_settings->get( 'query_proxies_status' ), GEOIPSL_ON_STATUS ); ?>>
-              <?php _e( 'Allow redirection when source IP is detectable proxy.', 'geoipsl' ); ?>
-            </label>
-            <br>
+<label for="remember_last_served_site">
+<input name="visitor_tracking"  type="radio" id="remember_last_served_site" value="read" <?php echo checked( $geoipsl_admin_settings->get( 'visitor_tracking' ), 'read' ); ?> >
+<?php _e( 'Read cookies from site visitor, but do not write them. Use the "remember-me" shortcode. <span style="color: #d46f15">( very alpha )</span>', 'geoipsl' ); ?>
+</label>
+<br>
 
-          </fieldset>
-        </td>
-      </tr>
+<label for="remember_last_served_site">
+<input name="visitor_tracking"  type="radio" id="remember_last_served_site" value="write" <?php echo checked( $geoipsl_admin_settings->get( 'visitor_tracking' ), 'write' ); ?> >
+<?php _e( 'Write cookies whenever a subsite is served, and read on next visit. <span style="color: #d46f15">( very alpha )</span>', 'geoipsl' ); ?>
+</label>
+<br>
 
-      <tr>
-        <th scope="row"><?php _e( 'Accuracy settings', 'geoipsl' ); ?></th>
-          <td>
-            <fieldset>
-              <legend class="screen-reader-text"><span><?php _e( 'Distance logic', 'geoipsl' ); ?></span></legend>
-              <label for="distance_limit">
-                <?php _e( 'Serve nearest site within', 'geoipsl' ); ?>
-                <input name="distance_limit" type="number" id="distance_limit" value="<?php echo esc_attr( $geoipsl_admin_settings->get( 'distance_limit' ) ); ?>" min="1" max="1000">
-                <?php _e( 'kilometer(s) of visitor location.', 'geoipsl' ); ?>
-              </label>
-              <br>
+<label for="monitor_served_sites">
+<input name="visitor_tracking"  type="radio" id="monitor_served_sites" value="suggest" <?php echo checked( $geoipsl_admin_settings->get( 'visitor_tracking' ), 'suggest' ); ?> >
+<?php _e( 'Monitor user browsing behaviour of your subsites and calculate or suggest which site to remember. <span style="color: #d46f15">( experimental )</span>', 'geoipsl' ); ?>
+</label>
+<br>
+</fieldset>
+</td>
+</tr>
 
-            </fieldset>
-          </td>
-      </tr>
+<tr>
+<th scope="row"><?php _e( 'Accuracy', 'geoipsl' ); ?></th>
+<td>
+<fieldset>
+<legend class="screen-reader-text"><span><?php _e( 'Distance logic', 'geoipsl' ); ?></span></legend>
+<label for="distance_limit">
+<?php _e( 'Serve nearest site within', 'geoipsl' ); ?>
+<input name="distance_limit" type="number" id="distance_limit" value="<?php echo esc_attr( $geoipsl_admin_settings->get( 'distance_limit' ) ); ?>" min="1" max="10000">
+<?php _e( 'kilometer(s) of visitor location.', 'geoipsl' ); ?>
+</label>
+<br>
 
-      <tr>
-        <th scope="row"><?php _e( 'Theme integration', 'geoipsl' ); ?></th>
-          <td>
-            <fieldset>
-              <legend class="screen-reader-text"><span><?php _e( 'Location chooser', 'geoipsl' ); ?></span></legend>
-              <label for="lightbox_as_location_chooser_status">
-                <input name="lightbox_as_location_chooser_status" type="checkbox" id="lightbox_as_location_chooser_status" value=<?php printf( '"%s"', GEOIPSL_ON_STATUS ); ?> <?php echo checked( $geoipsl_admin_settings->get( 'lightbox_as_location_chooser_status' ), GEOIPSL_ON_STATUS ); ?> >
-                <?php _e( 'Use a lightbox as location chooser when we cannot decide which site to serve to the visitor.', 'geoipsl' ); ?>
-              </label>
-              <br>
-              <label for="lightbox_trigger_element">
-                <input name="lightbox_trigger_element" type="text" id="lightbox_trigger_element" value="<?php echo esc_attr( $geoipsl_admin_settings->get( 'lightbox_trigger_element' ) ); ?>">
-                <?php _e( 'Specify trigger element selector.', 'geoipsl' ); ?>
-              </label>
-              <br>
+</fieldset>
+</td>
+</tr>
 
-              <p class="description"><?php _e( 'Requires theme implementation of your own lightbox.', 'geoipsl' ); ?></p>
+<tr>
+<th scope="row"><?php _e( 'Theme integration<br><span style="color: #d46f15">( deprecated )</span>', 'geoipsl' ); ?></th>
+<td>
+<fieldset>
+<legend class="screen-reader-text"><span><?php _e( 'Location chooser', 'geoipsl' ); ?></span></legend>
+<label for="lightbox_trigger_element">
+<input name="lightbox_trigger_element" type="text" id="lightbox_trigger_element" value="<?php echo esc_attr( $geoipsl_admin_settings->get( 'lightbox_trigger_element' ) ); ?>">
+<?php _e( 'Specify trigger element selector.', 'geoipsl' ); ?>
+</label>
+<br>
 
-            </fieldset>
-          </td>
-      </tr>
+<p class="description"><?php _e( 'Requires theme implementation of your own lightbox. This feature is now deprecated and will be removed in later versions of this plugin.', 'geoipsl' ); ?></p>
 
-    </tbody>
-  </table>
+</fieldset>
+</td>
+</tr>
 
-  <br>
+</tbody>
+</table>
 
-  <?php submit_button( __( 'Save', 'geoipsl' ), 'primary', 'geoipsl_config_save', false ); ?>
+<br>
+
+<?php submit_button( __( 'Save', 'geoipsl' ), 'primary', 'geoipsl_config_save', false ); ?>
 </form>

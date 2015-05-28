@@ -34,15 +34,15 @@ class Settings implements Settings_Interface {
 
   public function get( $unprefixed_option_name ) {
     if ( ! is_string( $unprefixed_option_name ) ) {
-      throw new InvalidArgumentException( 'get expects $unprefixed_option_name to be string, ' . gettype( $unprefixed_option_name ) . ' given.' );
+      return;
     }
 
     return ( isset( $this->settings[ $unprefixed_option_name ] ) ) ? $this->settings[ $unprefixed_option_name ] : '';
   }
 
-  public function set( $unprefixed_option_name, $option_value ) {
+  public function set( $unprefixed_option_name, $option_value, $type = NULL, $filter = array() ) {
     if ( ! is_string( $unprefixed_option_name ) ) {
-      throw new InvalidArgumentException( 'set expects $unprefixed_option_name to be string, ' . gettype( $unprefixed_option_name ) . ' given.' );
+      return;
     }
 
     update_option( geoipsl( $unprefixed_option_name ), $option_value );
