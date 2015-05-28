@@ -57,4 +57,21 @@ class Cookies {
   public static function parse_tracking_cookie( $wp_geoipsl ) {
     return $wp_geoipsl = json_decode( stripslashes( $wp_geoipsl ), true );
   }
+
+  public static function write_tracking_cookie() {
+    $current_site = get_current_site();
+    $current_site = $current_site->domain;
+    $current_site = preg_replace( '/http(s?)\/\/:/', '', $current_site );
+    $current_site = preg_replace( '/^www\./', '', $current_site );
+    $current_site = '.' . $current_site;
+
+    $subsite_url = get_site_url( get_current_blog_id() );
+
+    $wp_geoipsl = array(
+      'href' => $subsite_url,
+      'remember' => 1,
+    );
+
+    setcookie( 'wp_geoipsl_tracker', json_encode( $wp_geoipsl ), time()+60*60*24*30, '/',  $current_site );
+  }
 }

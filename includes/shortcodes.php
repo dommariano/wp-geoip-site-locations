@@ -47,6 +47,14 @@ function geoipsl_remember_me_form( $atts ) {
     $output  = __( $output, 'geoipsl' );
   }
 
+  if ( 'write' == $geoipsl_settings->get( 'visitor_tracking' ) ) {
+    $output  = 'The GeoIPSL plugin is configured to automatically write cookies';
+    $output .= ' from the server. Visitor input will be ignored.';
+
+    $output  = __( $output, 'geoipsl' );
+  }
+
+
   return $output;
 }
 
