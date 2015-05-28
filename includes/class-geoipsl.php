@@ -195,7 +195,7 @@ class Site_Locations {
         add_action( 'wp_enqueue_scripts', array( __CLASS__ , 'load_mobile_app' ), 1 );
       } else {
         if ( 'h5' == $geoipsl_settings->get( 'use_geolocation' ) ) {
-          add_action( 'wp_enqueue_scripts', array( __CLASS__ , 'load_maxmind_js_app' ), 1 );
+          add_action( 'wp_enqueue_scripts', array( __CLASS__ , 'load_mobile_app' ), 1 );
         } elseif( 'ip' == $geoipsl_settings->get( 'use_geolocation' ) ) {
           self::redirect_to_geoip_desktop_subsite();
         }
