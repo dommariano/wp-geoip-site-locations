@@ -1,4 +1,4 @@
-# GeoIP Site Locations 0.4.1 #
+# GeoIP Site Locations 0.4.3#
 
 GeoIPSL is a WordPress plugin that detects user location based on IP or cookie 
 information and redirects to the appropriate geo-targeted version of your site.
@@ -57,7 +57,8 @@ Refer to their plugin [here](https://github.com/wpengine/geoip).
 ##Contributors##
 
 This plugin, made open source this June 2015 has been in private development for
-the past seven months. So I'll be super happy to hear about anyone who wishes to
+the past seven months (here)[https://bitbucket.org/poweredbycoffeeandcream/geoipsl/overview]
+and has since been public. I'll be super happy to hear about anyone who wishes to
 contribute! Feel free to discuss the roadmap and features with me. :D
 
 Pull requests are always welcome!
