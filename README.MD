@@ -1,6 +1,6 @@
 # GeoIP Site Locations 0.4.1 #
 
-GeoIPSL is a WordPress Plugins that detects user location based on IP or cookie 
+GeoIPSL is a WordPress plugin that detects user location based on IP or cookie 
 information and redirects to the appropriate geo-targeted version of your site.
 
 ##Plugin Setup for Development##
