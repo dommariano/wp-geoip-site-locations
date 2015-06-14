@@ -192,7 +192,9 @@ class Site_Locations {
       }
 
       if ( $mobile_detect->isMobile() || $mobile_detect->isTablet() ) {
-        add_action( 'wp_enqueue_scripts', array( __CLASS__ , 'load_mobile_app' ), 1 );
+        if ( 'manual' != $geoipsl_settings->get( 'use_geolocation' ) ) {
+          add_action( 'wp_enqueue_scripts', array( __CLASS__ , 'load_mobile_app' ), 1 );
+        }
       } else {
         if ( 'h5' == $geoipsl_settings->get( 'use_geolocation' ) ) {
           add_action( 'wp_enqueue_scripts', array( __CLASS__ , 'load_mobile_app' ), 1 );
