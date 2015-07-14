@@ -1,8 +1,8 @@
 <?php namespace GeoIPSL;
 
 if ( ! function_exists( 'add_action' ) && ! function_exists( 'add_filter' ) ) {
-  echo "Hi there!  I'm just a plugin, not much I can do when called directly.";
-  exit;
+	echo "Hi there!  I'm just a plugin, not much I can do when called directly.";
+	exit;
 }
 
 /**
@@ -33,114 +33,114 @@ if ( ! function_exists( 'add_action' ) && ! function_exists( 'add_filter' ) ) {
  */
 class Settings_Admin implements Settings_Admin_Interface {
 
-  private $admin_settings;
+	private $admin_settings;
 
-  public function __construct( Settings &$settings ) {
-    $this->admin_settings = $settings;
-  }
+	public function __construct( Settings &$settings ) {
+		$this->admin_settings = $settings;
+	}
 
-  public function get( $unprefixed_option_name ) {
-    return $this->admin_settings->get( $unprefixed_option_name );
-  }
+	public function get( $unprefixed_option_name ) {
+		return $this->admin_settings->get( $unprefixed_option_name );
+	}
 
-  public function set_geoip_test_ip( $option_value )  {
-    if ( ! is_string( $option_value ) ) {
-      return;
-    }
+	public function set_geoip_test_ip( $option_value ) {
+		if ( ! is_string( $option_value ) ) {
+			return;
+		}
 
-    $option_value = IP::is_reserved_ipv4( $option_value  ) ? GEOIPSL_RESERVED_IP : $option_value;
-    $option_value = '' == $option_value || filter_var( $option_value, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) ? $option_value : GEOIPSL_INVALID_IP;
+		$option_value = IP::is_reserved_ipv4( $option_value ) ? GEOIPSL_RESERVED_IP : $option_value;
+		$option_value = '' == $option_value || filter_var( $option_value, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) ? $option_value : GEOIPSL_INVALID_IP;
 
-    if ( GEOIPSL_RESERVED_IP == $option_value ) {
-      return;
-    }
+		if ( GEOIPSL_RESERVED_IP == $option_value ) {
+			return;
+		}
 
-    if ( GEOIPSL_INVALID_IP == $option_value ) {
-      return;
-    }
+		if ( GEOIPSL_INVALID_IP == $option_value ) {
+			return;
+		}
 
-    $this->admin_settings->set( 'geoip_test_ip', $option_value );
-  }
+		$this->admin_settings->set( 'geoip_test_ip', $option_value );
+	}
 
-  public function set_test_mobile_coords_from( $option_value )  {
-    if ( ! is_string( $option_value ) ) {
-      return;
-    }
+	public function set_test_mobile_coords_from( $option_value ) {
+		if ( ! is_string( $option_value ) ) {
+			return;
+		}
 
-    $option_value = str_replace( ' ', '', $option_value );
+		$option_value = str_replace( ' ', '', $option_value );
 
-    if ( '' == $option_value ) {
-      $this->admin_settings->set( 'test_mobile_coords_from', $option_value );
-      return;
-    }
+		if ( '' == $option_value ) {
+			$this->admin_settings->set( 'test_mobile_coords_from', $option_value );
+			return;
+		}
 
-    $option_values = explode( ',', $option_value );
+		$option_values = explode( ',', $option_value );
 
-    if ( 2 != count( $option_values ) && '' != $option_value ) {
-      return;
-    }
+		if ( 2 != count( $option_values ) && '' != $option_value ) {
+			return;
+		}
 
-    if ( ! is_numeric( trim( $option_values[0] ) ) ) {
-      return;
-    }
+		if ( ! is_numeric( trim( $option_values[0] ) ) ) {
+			return;
+		}
 
-    if ( ! is_numeric( trim( $option_values[1] ) ) ) {
-      return;
-    }
+		if ( ! is_numeric( trim( $option_values[1] ) ) ) {
+			return;
+		}
 
-    $this->admin_settings->set( 'test_mobile_coords_from', $option_value );
-  }
+		$this->admin_settings->set( 'test_mobile_coords_from', $option_value );
+	}
 
-  public function set_test_coords_to( $option_value )  {
-    if ( ! is_string( $option_value ) ) {
-      return;
-    }
+	public function set_test_coords_to( $option_value ) {
+		if ( ! is_string( $option_value ) ) {
+			return;
+		}
 
-    $option_value = str_replace( ' ', '', $option_value );
+		$option_value = str_replace( ' ', '', $option_value );
 
-    if ( '' == $option_value ) {
-      $this->admin_settings->set( 'test_mobile_coords_to', $option_value );
-      return;
-    }
+		if ( '' == $option_value ) {
+			$this->admin_settings->set( 'test_mobile_coords_to', $option_value );
+			return;
+		}
 
-    $option_values = explode( ',', $option_value );
+		$option_values = explode( ',', $option_value );
 
-    if ( 2 != count( $option_values ) && '' != $option_value ) {
-      return;
-    }
+		if ( 2 != count( $option_values ) && '' != $option_value ) {
+			return;
+		}
 
-    if ( ! is_numeric( trim( $option_values[0] ) ) ) {
-      return;
-    }
+		if ( ! is_numeric( trim( $option_values[0] ) ) ) {
+			return;
+		}
 
-    if ( ! is_numeric( trim( $option_values[1] ) ) ) {
-      return;
-    }
+		if ( ! is_numeric( trim( $option_values[1] ) ) ) {
+			return;
+		}
 
-    $this->admin_settings->set( 'test_mobile_coords_to', $option_value );
-  }
+		$this->admin_settings->set( 'test_mobile_coords_to', $option_value );
+	}
 
-  public function set_maxmind_user_id( $option_value ) {
-    if ( ! is_string( $option_value ) ) {
-      return;
-    }
+	public function set_maxmind_user_id( $option_value ) {
+		if ( ! is_string( $option_value ) ) {
+			return;
+		}
 
-    $this->admin_settings->set( 'maxmind_user_id', $option_value );
-  }
+		$this->admin_settings->set( 'maxmind_user_id', $option_value );
+	}
 
-  public function set_maxmind_license_key( $option_value ) {
-    if ( ! is_string( $option_value ) ) {
-      return;
-    }
+	public function set_maxmind_license_key( $option_value ) {
+		if ( ! is_string( $option_value ) ) {
+			return;
+		}
 
-    $this->admin_settings->set( 'maxmind_license_key', $option_value );
-  }
+		$this->admin_settings->set( 'maxmind_license_key', $option_value );
+	}
 
-  public function set_maxmind_remaining_queries( $option_value ) {
-    if ( ! is_int( $option_value ) ) {
-      return;
-    }
+	public function set_maxmind_remaining_queries( $option_value ) {
+		if ( ! is_int( $option_value ) ) {
+			return;
+		}
 
-    $this->admin_settings->set( 'maxmind_remaining_queries', $option_value );
-  }
+		$this->admin_settings->set( 'maxmind_remaining_queries', $option_value );
+	}
 }

@@ -7,19 +7,19 @@
   <table class="wp-list-table widefat fixed geoipsl-settings-databases">
     <thead>
       <tr>
-        <th><?php _e( 'Database', 'geoipsl'); ?></th>
-        <th><?php _e( 'File Size', 'geoipsl'); ?></th>
-        <th><?php _e( 'Last Updated', 'geoipsl'); ?></th>
-        <th><?php _e( 'Next Update', 'geoipsl'); ?></th>
+        <th><?php _e( 'Database', 'geoipsl' ); ?></th>
+        <th><?php _e( 'File Size', 'geoipsl' ); ?></th>
+        <th><?php _e( 'Last Updated', 'geoipsl' ); ?></th>
+        <th><?php _e( 'Next Update', 'geoipsl' ); ?></th>
       </tr>
     </thead>
 
     <tfoot>
       <tr>
-        <th><?php _e( 'Database', 'geoipsl'); ?></th>
-        <th><?php _e( 'File Size', 'geoipsl'); ?></th>
-        <th><?php _e( 'Last Updated', 'geoipsl'); ?></th>
-        <th><?php _e( 'Next Update', 'geoipsl'); ?></th>
+        <th><?php _e( 'Database', 'geoipsl' ); ?></th>
+        <th><?php _e( 'File Size', 'geoipsl' ); ?></th>
+        <th><?php _e( 'Last Updated', 'geoipsl' ); ?></th>
+        <th><?php _e( 'Next Update', 'geoipsl' ); ?></th>
       </tr>
     </tfoot>
 
@@ -41,5 +41,5 @@
 
   <br>
 
-  <?php submit_button( __( 'Update and Synchronize', 'geoipsl' ), 'primary', 'synchronize_with_maxmind_geoip_city_list', false ); ?>
+	<?php submit_button( __( 'Update and Synchronize', 'geoipsl' ), 'primary', 'synchronize_with_maxmind_geoip_city_list', false ); ?>
 </form>

@@ -12,12 +12,12 @@
     <tbody>
       <tr>
         <td width="100"><?php _e( 'User ID' ); ?></td>
-        <td><input type="text" name="maxmind_user_id" placeholder="User ID" value="<?php echo esc_attr( $geoipsl_settings->get('maxmind_user_id') ); ?>"></td>
+        <td><input type="text" name="maxmind_user_id" placeholder="User ID" value="<?php echo esc_attr( $geoipsl_settings->get( 'maxmind_user_id' ) ); ?>"></td>
       </tr>
 
       <tr>
         <td width="100"><?php _e( 'License Key' ); ?></td>
-        <td><input type="text" name="maxmind_license_key" placeholder="License Key" value="<?php echo esc_attr( $geoipsl_settings->get('maxmind_license_key') ); ?>"></td>
+        <td><input type="text" name="maxmind_license_key" placeholder="License Key" value="<?php echo esc_attr( $geoipsl_settings->get( 'maxmind_license_key' ) ); ?>"></td>
       </tr>
     </tbody>
   </table>
@@ -35,6 +35,6 @@
 
   <br>
 
-  <?php submit_button( __( 'Save', 'geoipsl' ), 'primary', 'geoipsl_save_api_keys', false ); ?>
-  <?php submit_button( __( 'Clear and Save', 'geoipsl' ), 'secondary', 'geoipsl_clear_api_keys', false ); ?>
+	<?php submit_button( __( 'Save', 'geoipsl' ), 'primary', 'geoipsl_save_api_keys', false ); ?>
+	<?php submit_button( __( 'Clear and Save', 'geoipsl' ), 'secondary', 'geoipsl_clear_api_keys', false ); ?>
 </form>

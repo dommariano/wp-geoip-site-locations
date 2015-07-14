@@ -15,7 +15,7 @@ $rslt		= $geoipsl_reader->query_city( $geoip_test_ip );
 $lat_to	= $rslt->location->latitude;
 $lon_to	= $rslt->location->longitude;
 
-foreach( $alocs as $id => $location ) {
+foreach ( $alocs as $id => $location ) {
 	$lat_fr	= floatval( $location['latitude'] );
 	$lon_fr	= floatval( $location['longitude'] );
 	$d			= Distance::geodesic( $lat_fr, $lon_fr, $lat_to, $lon_to );
@@ -24,7 +24,7 @@ foreach( $alocs as $id => $location ) {
 	$dist[ $id ] = $d;
 }
 
-unset( $id, $location, $lat_fr, $lon_fr, $d );		
+unset( $id, $location, $lat_fr, $lon_fr, $d );
 
 $adapter	= new BuzzHttpAdapter();
 $geocoder	= new Geocoder();
@@ -40,17 +40,17 @@ Given IP
 <code><?php echo esc_attr( $geoip_test_ip ); ?></code>
 is located at 
 <code>
-<?php printf( "%d %s, %s, %s, %s %s", 
+<?php printf( '%d %s, %s, %s, %s %s',
 	$geocode->getStreetNumber(),
 	$geocode->getStreetName(),
 	$geocode->getCity(),
 	$geocode->getCounty(),
 	$geocode->getCountry(),
-	$geocode->getZipcode() ); ?>
+$geocode->getZipcode() ); ?>
 </code>
 with the associated coordinate at
 <code>
-	<?php printf( "( %s, %s )", $lat_to, $lon_to ); ?>
+	<?php printf( '( %s, %s )', $lat_to, $lon_to ); ?>
 </code>.
 The site is
 <code> 
@@ -65,7 +65,7 @@ printf(
 		'%d nearest locations:',
 		count( $closest_site_ids ),
 		'geoipsl'
-	), 
+	),
 	count( $closest_site_ids )
 );
 foreach ( $closest_site_ids as $site_id ) {
@@ -83,7 +83,7 @@ with site id of
 <code>
 <?php echo $site_id; ?>
 </code>
-<?php echo ( $cnt != count( $closest_site_ids ) ) ? ',' : '.'; 
+<?php echo ( $cnt != count( $closest_site_ids ) ) ? ',' : '.';
 }
 // will destroy array key association
 array_multisort( $dist, SORT_ASC, $alocs );
@@ -95,23 +95,23 @@ The IP to geolocation information you see here is obtained using MaxMind
 <?php
 if ( $geoipsl_reader->is_using_geoip_db() ) {
 	switch ( (int) $geoipsl_settings->get( 'geoip_db' ) ) {
-		case "1":
-			echo 'GeoLite2 City';	
+		case '1':
+			echo 'GeoLite2 City';
 			break;
-		case "2":
+		case '2':
 			echo 'GeoIP2 Country';
 			break;
-		case "3":
+		case '3':
 			echo 'GeoIP2 City';
 			break;
 		default:
 			echo 'GeoIP2 City';
 			break;
-	}	
+	}
 } else {
 	switch ( (int) $geoipsl_settings->get( 'geoip_web_service' ) ) {
 		case 1:
-			echo 'GeoIP2 Precision Country';	
+			echo 'GeoIP2 Precision Country';
 			break;
 		case 2:
 			echo 'GeoIP2 Precision City';
@@ -149,21 +149,21 @@ service.
 	</tfoot>
 
 	<tbody><?php
-		foreach( $alocs as $id => $location ) {
-			$cnt++;
-			$class = ( $cnt % 2 ) ? 'alternate' : ''; ?>
+	foreach ( $alocs as $id => $location ) {
+		$cnt++;
+		$class = ( $cnt % 2 ) ? 'alternate' : ''; ?>
 
 			<tr class="<?php echo esc_attr( $class ); ?>" >
 				<td><?php echo esc_attr( $location['id'] ); ?></td>
 				<td><?php
-						printf( '<a href="%s" target="_blank">%s</a>',
+					printf( '<a href="%s" target="_blank">%s</a>',
 						get_site_url( $location['id'] ),
-						get_site_url( $location['id'] ) );
+					get_site_url( $location['id'] ) );
 				?></td>
 				<td><?php echo esc_attr( $location['latitude'] ); ?></td>
 				<td><?php echo esc_attr( $location['longitude'] ); ?></td>
-				<td><?php echo esc_attr( number_format( 
-					$location['distance_from_given_ip'], 2, '.', ',' ) . ' m' ); 
+				<td><?php echo esc_attr( number_format(
+				$location['distance_from_given_ip'], 2, '.', ',' ) . ' m' );
 				?></td>
 			</tr> <?php }
 
