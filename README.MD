@@ -1,6 +1,8 @@
-### This plugin is no longer maintained.
+## Development abandoned.
 
-# GeoIP Site Locations 0.4.4#
+This plugin is no longer maintained. This has been a pet-project-turned-useful during the time that I've worked on it. This has been the first WordPress plugin I wrote, and it has been a learning experience.
+
+## GeoIP Site Locations 0.4.4#
 
 GeoIPSL is a WordPress plugin that detects user location based on IP or cookie 
 information and redirects to the appropriate geo-targeted version of your site.
@@ -19,7 +21,7 @@ following steps.
 
 1. Download this repo and extract it into the plugins/wp-geoip-site-locations/ 
 directory of your WordPress install. Alternatively, you can just ```cd``` into 
-the plugins directory clone this repository.p
+the plugins directory clone this repository.
 1. After following these step, you should be able to run ```composer install```. 
 This should install all the dependencies.
 1. Run ```composer dump-autoload -o``` to generate the auto-loaded files.
