@@ -1,3 +1,5 @@
+### This plugin is no longer maintained.
+
 # GeoIP Site Locations 0.4.4#
 
 GeoIPSL is a WordPress plugin that detects user location based on IP or cookie 
@@ -15,11 +17,9 @@ following installed on your system:
 This plugin uses several PHP libraries. In order to build the plugin, follow the 
 following steps.
 
-1. Download this repo and extract it into the plugins/geoip-site-locations/ 
+1. Download this repo and extract it into the plugins/wp-geoip-site-locations/ 
 directory of your WordPress install. Alternatively, you can just ```cd``` into 
-the plugins directory and run ```git clone 
-https://poweredbycoffeeandcream@bitbucket.org/poweredbycoffeeandcream/geoipsl.git 
-geoip-site-locations```
+the plugins directory clone this repository.p
 1. After following these step, you should be able to run ```composer install```. 
 This should install all the dependencies.
 1. Run ```composer dump-autoload -o``` to generate the auto-loaded files.
@@ -55,15 +55,6 @@ in Karney's 2012
 paper](http://link.springer.com/content/pdf/10.1007%2Fs00190-012-0578-z).
 1. Add integration with WP Engine's GeoIP service for Business Plan subscribers. 
 Refer to their plugin [here](https://github.com/wpengine/geoip).
-
-##Contributors##
-
-This plugin, made open source this June 2015 has been in private development for
-the past seven months [here](https://bitbucket.org/poweredbycoffeeandcream/geoipsl/overview)
-and has since been public. I'll be super happy to hear about anyone who wishes to
-contribute! Feel free to discuss the roadmap and features with me. :D
-
-Pull requests are always welcome!
 
 ##License##
 
